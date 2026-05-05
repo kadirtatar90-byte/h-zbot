@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kullanım Şartları — Hızbot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #060608; color: #e5e7eb; }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 900px 700px at -5% 5%, rgba(124,58,237,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 700px 500px at 105% 90%, rgba(79,70,229,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 500px 400px at 60% 30%, rgba(124,58,237,0.07) 0%, transparent 50%);
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .glass-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); backdrop-filter: blur(20px); }
+    h2 { color: #a78bfa; font-weight: 700; font-size: 1.1rem; margin-top: 2rem; margin-bottom: 0.5rem; }
+    p, li { color: rgba(255,255,255,0.65); line-height: 1.8; font-size: 0.95rem; }
+    ul { list-style: disc; padding-left: 1.5rem; margin-top: 0.4rem; }
+    li { margin-bottom: 0.3rem; }
+    a { color: #a78bfa; }
+    a:hover { text-decoration: underline; }
+    .divider { border-color: rgba(255,255,255,0.07); margin: 1.5rem 0; }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- Nav -->
+  <nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4" style="background:rgba(6,6,8,0.85); backdrop-filter:blur(16px); border-bottom:1px solid rgba(255,255,255,0.06);">
+    <a href="index.html" class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <span class="font-black text-white text-lg tracking-tight">Hızbot</span>
+    </a>
+    <a href="login.html" class="text-sm text-white/50 hover:text-white transition-colors">← Kayıt sayfasına dön</a>
+  </nav>
+
+  <!-- Content -->
+  <main class="max-w-3xl mx-auto px-6 pt-32 pb-24">
+    <div class="glass-card rounded-2xl p-8 md:p-12">
+
+      <div class="mb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-4" style="background:rgba(124,58,237,0.15); border:1px solid rgba(124,58,237,0.3); color:#a78bfa;">
+          Son güncelleme: 4 Mayıs 2026
+        </div>
+        <h1 class="text-3xl font-black text-white mb-3">Kullanım Şartları</h1>
+        <p>Hızbot platformunu kullanmadan önce lütfen bu kullanım şartlarını dikkatlice okuyun. Platformu kullanarak bu şartları kabul etmiş sayılırsınız.</p>
+      </div>
+
+      <hr class="divider" />
+
+      <h2>1. Genel Hükümler</h2>
+      <p>Bu Kullanım Şartları, Hızbot ("Şirket", "biz", "bizim") tarafından sunulan hizmetlere ilişkin koşulları düzenlemektedir. <strong class="text-white">turanai.com.tr</strong> alan adı üzerinden erişilen Hızbot platformunu kullanan tüm bireyler ve kuruluşlar ("Kullanıcı") bu şartlara tabi olup şartları kabul etmiş sayılır.</p>
+
+      <h2>2. Hizmet Tanımı</h2>
+      <p>Hızbot; yapay zeka destekli otomasyon çözümleri, WhatsApp Business API entegrasyonu ve Instagram DM yönetimi gibi dijital iletişim otomasyonu hizmetleri sunan bir SaaS platformudur. Sunulan başlıca hizmetler şunlardır:</p>
+      <ul>
+        <li>Yapay zeka destekli otomatik yanıt sistemleri</li>
+        <li>WhatsApp Business üzerinden mesaj otomasyonu</li>
+        <li>Instagram doğrudan mesaj yönetimi ve otomasyonu</li>
+        <li>Müşteri iletişim analitiği ve raporlama</li>
+        <li>API entegrasyon hizmetleri</li>
+      </ul>
+
+      <h2>3. Kullanıcı Hesabı ve Güvenlik</h2>
+      <p>Platforma erişim için geçerli bir hesap oluşturulması zorunludur. Kullanıcı;</p>
+      <ul>
+        <li>Hesap oluştururken doğru ve güncel bilgi sağlamakla yükümlüdür.</li>
+        <li>Hesap şifresini gizli tutmak ve üçüncü kişilerle paylaşmamakla sorumludur.</li>
+        <li>Hesabı üzerinden gerçekleştirilen tüm işlemlerden bizzat sorumludur.</li>
+        <li>Hesabında yetkisiz erişim tespit ettiğinde derhal Hızbot'u bilgilendirmelidir.</li>
+      </ul>
+
+      <h2>4. Kabul Edilemez Kullanım</h2>
+      <p>Aşağıdaki kullanımlar kesinlikle yasaktır ve hesabın derhal askıya alınmasına veya kapatılmasına neden olur:</p>
+      <ul>
+        <li>Spam, istenmeyen toplu mesaj veya ticari reklam içerikleri göndermek</li>
+        <li>Yanıltıcı, yanlış veya sahte bilgi yaymak</li>
+        <li>Hızbot altyapısına zarar vermeye yönelik her türlü saldırı girişimi</li>
+        <li>Telif hakkı, ticari marka veya fikri mülkiyet haklarını ihlal etmek</li>
+        <li>Nefret söylemi, taciz veya ayrımcılık içeren içerik oluşturmak veya iletmek</li>
+        <li>Yürürlükteki Türk Hukuku ve uluslararası mevzuatı ihlal etmek</li>
+        <li>Üçüncü tarafların gizlilik haklarını çiğnemek</li>
+      </ul>
+
+      <h2>5. Abonelik ve Ödeme</h2>
+      <p>Ücretli planlar aylık veya yıllık abonelik modeliyle sunulmaktadır. Ödemeye ilişkin koşullar:</p>
+      <ul>
+        <li>Abonelik, iptal edilmediği sürece otomatik yenilenir.</li>
+        <li>İptal işlemi mevcut fatura döneminin sonuna kadar geçerlilik taşımaz; kalan süre için iade yapılmaz.</li>
+        <li>Hızbot, önceden bildirimde bulunmak kaydıyla fiyatları değiştirme hakkını saklı tutar.</li>
+        <li>Ödemeler yetkili ödeme aracıları üzerinden güvenli biçimde işlenir.</li>
+      </ul>
+
+      <h2>6. Fikri Mülkiyet</h2>
+      <p>Hızbot platformuna ait tüm yazılım, tasarım, logo, içerik ve diğer materyaller Hızbot'un münhasır mülkiyetindedir. Kullanıcıya yalnızca bu şartlar kapsamında sınırlı ve devredilemez bir kullanım lisansı verilmektedir. Platformun herhangi bir bileşeninin kopyalanması, dağıtılması veya türev ürün oluşturulması için önceden yazılı izin alınması zorunludur.</p>
+
+      <h2>7. Hizmet Sürekliliği ve Garantiler</h2>
+      <p>Hızbot, hizmetlerin kesintisiz veya hatasız olacağını garanti etmez. Bakım, teknik arızalar veya mücbir sebeplerden kaynaklanan geçici kesintilerden doğan zararlardan Hızbot sorumlu tutulamaz. Yıllık %99,5 çalışma süresi (uptime) hedeflenmekle birlikte bu oran taahhüt niteliği taşımaz.</p>
+
+      <h2>8. Sorumluluk Sınırlaması</h2>
+      <p>Hızbot'un herhangi bir nedenle sorumlu tutulabileceği durumlarda toplam sorumluluğu, kullanıcının son 3 (üç) aylık dönemde ödediği abonelik bedeliyle sınırlıdır. Hızbot, dolaylı, arızi, özel veya cezai nitelikteki zararlardan hiçbir koşulda sorumlu değildir.</p>
+
+      <h2>9. Şartlarda Değişiklik</h2>
+      <p>Hızbot bu şartları dilediği zaman güncelleme hakkını saklı tutar. Yapılacak önemli değişiklikler kayıtlı e-posta adresine bildirilecek ve platformda duyurulacaktır. Değişiklik bildiriminden sonra platformu kullanmaya devam etmek, güncel şartların kabul edildiği anlamına gelir.</p>
+
+      <h2>10. Uygulanacak Hukuk ve Yetki</h2>
+      <p>Bu Kullanım Şartları, Türkiye Cumhuriyeti hukukuna tabidir. Taraflar arasında doğabilecek her türlü uyuşmazlığın çözümünde <strong class="text-white">İstanbul Mahkemeleri ve İcra Daireleri</strong> münhasıran yetkilidir.</p>
+
+      <h2>11. İletişim</h2>
+      <p>Bu şartlara ilişkin soru ve talepleriniz için bizimle iletişime geçebilirsiniz:</p>
+      <ul>
+        <li>WhatsApp: <a href="https://wa.me/905443873239">+90 544 387 32 39</a></li>
+        <li>Web sitesi: <a href="https://turanai.com.tr">turanai.com.tr</a></li>
+      </ul>
+
+      <hr class="divider" />
+
+      <div class="flex flex-col sm:flex-row gap-3 mt-6">
+        <a href="login.html" class="flex-1 text-center py-3 px-6 rounded-xl font-semibold text-sm transition-all" style="background:#7c3aed; color:white;">
+          Kabul Ediyorum — Kayıt Ol
+        </a>
+        <a href="index.html" class="flex-1 text-center py-3 px-6 rounded-xl font-semibold text-sm transition-all text-white/60 hover:text-white" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);">
+          Ana Sayfaya Dön
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hızbot — Giriş Yap</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #060608; color: #fff; }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 900px 700px at -5% 5%, rgba(124,58,237,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 700px 500px at 105% 90%, rgba(79,70,229,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 500px 400px at 60% 30%, rgba(124,58,237,0.07) 0%, transparent 50%);
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .glass-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(20px);
+    }
+    .input-field {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .input-field:focus {
+      border-color: rgba(124,58,237,0.6);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
+    }
+    .input-field::placeholder { color: rgba(255,255,255,0.25); }
+
+    .btn-primary {
+      background: #7c3aed;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { background: #6d28d9; box-shadow: 0 0 28px rgba(124,58,237,0.5); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .orb {
+      background: radial-gradient(ellipse at center, rgba(124,58,237,0.35) 0%, rgba(79,70,229,0.15) 50%, transparent 75%);
+      filter: blur(40px);
+      pointer-events: none;
+    }
+
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+    .shake { animation: shake 0.4s ease; }
+
+    /* Role tab */
+    .role-tab {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      color: rgba(255,255,255,0.4);
+      border: 1px solid transparent;
+    }
+    .role-tab.active-admin {
+      background: rgba(124,58,237,0.2);
+      border-color: rgba(124,58,237,0.4);
+      color: #a78bfa;
+    }
+    .role-tab.active-user {
+      background: rgba(34,197,94,0.15);
+      border-color: rgba(34,197,94,0.35);
+      color: #4ade80;
+    }
+
+    .demo-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px; padding: 6px 10px;
+      cursor: pointer; transition: background 0.15s;
+      font-size: 11px;
+    }
+    .demo-chip:hover { background: rgba(255,255,255,0.07); }
+
+    .eye-btn { color: rgba(255,255,255,0.3); transition: color 0.2s; }
+    .eye-btn:hover { color: rgba(255,255,255,0.7); }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: #0f0f16; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px; padding: 32px; width: 100%; max-width: 420px;
+      transform: scale(0.94) translateY(12px); transition: transform 0.2s;
+      margin: 16px;
+    }
+    .modal-overlay.open .modal-box { transform: scale(1) translateY(0); }
+    .modal-input {
+      width: 100%; padding: 12px 14px; border-radius: 12px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      color: #fff; font-size: 14px; outline: none; transition: border 0.2s;
+    }
+    .modal-input:focus { border-color: rgba(124,58,237,0.6); }
+
+    /* Plan cards in register modal */
+    .plan-card {
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
+      padding: 12px; cursor: pointer; transition: all 0.15s; flex: 1;
+      text-align: center;
+    }
+    .plan-card:hover { border-color: rgba(124,58,237,0.4); background: rgba(124,58,237,0.06); }
+    .plan-card.selected { border-color: #7c3aed; background: rgba(124,58,237,0.15); }
+    .plan-card.selected .plan-name { color: #a78bfa; }
+
+    /* Payment form */
+    .pay-tab { flex:1; padding:8px; border-radius:8px; text-align:center; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.15s; color:rgba(255,255,255,0.4); border:1px solid transparent; }
+    .pay-tab.active { background:rgba(124,58,237,0.2); border-color:rgba(124,58,237,0.4); color:#a78bfa; }
+    .card-visual {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+      border-radius: 16px; padding: 20px; position: relative; overflow: hidden;
+      border: 1px solid rgba(124,58,237,0.4);
+    }
+    .card-visual::before {
+      content: ''; position:absolute; top:-30px; right:-30px; width:120px; height:120px;
+      background: rgba(124,58,237,0.3); border-radius:50%;
+    }
+    .card-visual::after {
+      content: ''; position:absolute; bottom:-20px; left:20px; width:80px; height:80px;
+      background: rgba(79,70,229,0.25); border-radius:50%;
+    }
+    .terms-check { width:15px; height:15px; accent-color:#7c3aed; cursor:pointer; flex-shrink:0; margin-top:1px; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center relative overflow-hidden">
+
+  <div class="orb absolute w-[600px] h-[600px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+  <div class="absolute inset-0 pointer-events-none opacity-25"
+       style="background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:60px 60px;"></div>
+
+  <div class="relative z-10 w-full max-w-md px-6">
+    <!-- Logo -->
+    <div class="flex items-center justify-center gap-2.5 mb-8">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center"
+           style="box-shadow:0 0 20px rgba(124,58,237,0.4);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="text-white font-bold text-2xl tracking-tight">Hızbot</span>
+    </div>
+
+    <div class="glass-card rounded-2xl p-8">
+
+      <h1 class="text-xl font-black mb-1">Hoş Geldiniz</h1>
+      <p class="text-white/40 text-sm mb-6">Hesabınıza giriş yapın.</p>
+
+      <!-- Role Tabs -->
+      <div class="flex gap-2 p-1 rounded-xl mb-6" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06);">
+        <div class="role-tab active-admin" id="tab-admin" onclick="selectRole('admin')">
+          <span class="flex items-center justify-center gap-1.5">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Admin
+          </span>
+        </div>
+        <div class="role-tab" id="tab-user" onclick="selectRole('user')">
+          <span class="flex items-center justify-center gap-1.5">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Kullanıcı
+          </span>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div id="error-msg" class="hidden mb-4 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 text-sm flex items-center gap-2">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <span id="error-text"></span>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-white/55 mb-2">E-posta</label>
+          <div class="relative">
+            <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <input id="email" type="email" autocomplete="email"
+                   class="input-field w-full pl-10 pr-4 py-3 rounded-xl text-sm" />
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-white/55 mb-2">Şifre</label>
+          <div class="relative">
+            <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <input id="password" type="password" placeholder="••••••••" autocomplete="current-password"
+                   class="input-field w-full pl-10 pr-12 py-3 rounded-xl text-sm" />
+            <button type="button" class="eye-btn absolute right-3.5 top-1/2 -translate-y-1/2" onclick="togglePwd()">
+              <svg id="eye-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between mb-6">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="remember" class="w-4 h-4 rounded accent-violet-600" />
+            <span class="text-sm text-white/45">Beni hatırla</span>
+          </label>
+          <div class="flex items-center gap-3">
+            <a href="#" onclick="openForgot(event)" class="text-sm text-violet-400 hover:text-violet-300 transition-colors">Şifremi unuttum</a>
+            <span class="text-white/15">|</span>
+            <a href="#" onclick="openRegister(event)" class="text-sm text-violet-400 hover:text-violet-300 transition-colors">Kayıt Ol</a>
+          </div>
+        </div>
+
+        <button type="submit" id="submit-btn"
+                class="btn-primary w-full py-3.5 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2">
+          <span id="btn-text">Giriş Yap</span>
+          <svg id="btn-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <svg id="btn-spinner" class="hidden animate-spin" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        </button>
+      </form>
+
+      <!-- Demo credentials (only visible with ?dev=1 in URL) -->
+      <div id="demo-section" class="mt-6 pt-5 border-t border-white/5" style="display:none;">
+        <p class="text-xs text-white/25 text-center mb-3">Demo hesaplar (tıklayarak doldur)</p>
+        <div class="flex gap-2">
+          <div class="demo-chip flex-1 justify-center" onclick="fillDemo('admin')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span class="text-white/50">Admin hesabı</span>
+          </div>
+          <div class="demo-chip flex-1 justify-center" onclick="fillDemo('user')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="text-white/50">Kullanıcı hesabı</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="text-center mt-5 text-white/20 text-xs">
+      <a href="index.html" class="hover:text-white/45 transition-colors">← Ana Sayfaya Dön</a>
+    </p>
+  </div>
+
+  <script>
+    const ACCOUNTS = {
+      admin: { email: 'admin@hizbot.com', pass: 'Hizbot@2025!', name: 'Admin', role: 'admin' },
+      user:  { email: 'kullanici@hizbot.com', pass: 'User@2025!',  name: 'Kullanıcı', role: 'user'  }
+    };
+
+    let currentRole = 'admin';
+
+    function selectRole(role) {
+      currentRole = role;
+      document.getElementById('tab-admin').className = 'role-tab' + (role === 'admin' ? ' active-admin' : '');
+      document.getElementById('tab-user').className  = 'role-tab' + (role === 'user'  ? ' active-user'  : '');
+      document.getElementById('email').placeholder = ACCOUNTS[role].email;
+      document.getElementById('error-msg').classList.add('hidden');
+      document.getElementById('error-msg').classList.remove('flex');
+    }
+
+    function fillDemo(role) {
+      selectRole(role);
+      document.getElementById('email').value    = ACCOUNTS[role].email;
+      document.getElementById('password').value = ACCOUNTS[role].pass;
+    }
+
+    function togglePwd() {
+      const inp  = document.getElementById('password');
+      const icon = document.getElementById('eye-icon');
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+      } else {
+        inp.type = 'password';
+        icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+      }
+    }
+
+    function showError(msg) {
+      const box = document.getElementById('error-msg');
+      document.getElementById('error-text').textContent = msg;
+      box.classList.remove('hidden');
+      box.classList.add('flex');
+      document.getElementById('login-form').classList.add('shake');
+      setTimeout(() => document.getElementById('login-form').classList.remove('shake'), 400);
+    }
+
+    function setLoading(on) {
+      document.getElementById('btn-text').textContent = on ? 'Giriş yapılıyor...' : 'Giriş Yap';
+      document.getElementById('btn-arrow').classList.toggle('hidden', on);
+      document.getElementById('btn-spinner').classList.toggle('hidden', !on);
+      document.getElementById('submit-btn').disabled = on;
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const pass  = document.getElementById('password').value;
+      const remember = document.getElementById('remember').checked;
+
+      document.getElementById('error-msg').classList.add('hidden');
+      document.getElementById('error-msg').classList.remove('flex');
+
+      if (!email) { showError('E-posta adresi giriniz.'); return; }
+      if (!pass)  { showError('Şifre giriniz.'); return; }
+
+      setLoading(true);
+
+      setTimeout(() => {
+        const account = Object.values(ACCOUNTS).find(a => a.email === email && a.pass === pass);
+        if (account) {
+          const session = { email: account.email, name: account.name, role: account.role };
+          if (remember) localStorage.setItem('hizbot_session', JSON.stringify(session));
+          else sessionStorage.setItem('hizbot_session', JSON.stringify(session));
+          window.location.href = 'panel.html';
+        } else {
+          setLoading(false);
+          showError('E-posta veya şifre hatalı.');
+        }
+      }, 900);
+    }
+
+    // Auto-redirect if already logged in
+    const sess = localStorage.getItem('hizbot_session') || sessionStorage.getItem('hizbot_session');
+    if (sess) window.location.href = 'panel.html';
+
+    // Show demo section only when ?dev=1 is in URL
+    if (new URLSearchParams(window.location.search).get('dev') === '1') {
+      document.getElementById('demo-section').style.display = 'block';
+    }
+
+    // Init placeholder
+    selectRole('admin');
+
+    /* ── Şifremi Unuttum ── */
+    function openForgot(e) {
+      e && e.preventDefault();
+      document.getElementById('forgot-email').value = document.getElementById('email').value || '';
+      document.getElementById('forgot-result').classList.add('hidden');
+      document.getElementById('modal-forgot').classList.add('open');
+    }
+    function closeForgot() {
+      document.getElementById('modal-forgot').classList.remove('open');
+    }
+    function sendForgot() {
+      const email = document.getElementById('forgot-email').value.trim();
+      if (!email) { document.getElementById('forgot-email').focus(); return; }
+      const subject = encodeURIComponent('Şifre Sıfırlama Talebi – Hızbot');
+      const body = encodeURIComponent(
+        'Merhaba,\n\nAşağıdaki hesabım için şifre sıfırlama talebinde bulunuyorum:\n\nE-posta: ' + email + '\n\nTeşekkürler.'
+      );
+      window.open('https://mail.google.com/mail/?view=cm&fs=1&to=kadirtatar90@gmail.com&su=' + subject + '&body=' + body, '_blank');
+      document.getElementById('forgot-result').classList.remove('hidden');
+    }
+
+    /* ── Kayıt Ol ── */
+    let regPlan = 'free';
+    function openRegister(e) {
+      e && e.preventDefault();
+      document.getElementById('reg-name').value = '';
+      document.getElementById('reg-email').value = document.getElementById('email').value || '';
+      document.getElementById('reg-pass').value = '';
+      document.getElementById('reg-terms').checked = false;
+      document.getElementById('reg-error').classList.add('hidden');
+      document.getElementById('reg-success').classList.add('hidden');
+      document.getElementById('reg-form-wrap').classList.remove('hidden');
+      document.getElementById('reg-payment-wrap').classList.add('hidden');
+      // Kart alanlarını sıfırla
+      ['card-number','card-name','card-exp','card-cvv'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+      document.getElementById('card-display-num').textContent = '•••• •••• •••• ••••';
+      document.getElementById('card-display-name').textContent = 'ADI SOYADI';
+      document.getElementById('card-display-exp').textContent = 'MM/YY';
+      selectPayTab('card');
+      selectPlan('free');
+      document.getElementById('modal-register').classList.add('open');
+    }
+    function closeRegister() {
+      document.getElementById('modal-register').classList.remove('open');
+    }
+    function selectPlan(p) {
+      regPlan = p;
+      ['free','pro','business'].forEach(id => {
+        document.getElementById('plan-' + id).classList.toggle('selected', id === p);
+      });
+    }
+    function doRegister() {
+      const name  = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim().toLowerCase();
+      const pass  = document.getElementById('reg-pass').value;
+      const terms = document.getElementById('reg-terms').checked;
+      const errEl = document.getElementById('reg-error');
+
+      if (!name || !email || !pass) { errEl.textContent = 'Tüm alanları doldurunuz.'; errEl.classList.remove('hidden'); return; }
+      if (pass.length < 6) { errEl.textContent = 'Şifre en az 6 karakter olmalıdır.'; errEl.classList.remove('hidden'); return; }
+      if (!terms) { errEl.textContent = 'Kullanım Şartları ve Gizlilik Politikası\'nı kabul etmelisiniz.'; errEl.classList.remove('hidden'); return; }
+
+      const users = JSON.parse(localStorage.getItem('hizbot_users') || '[]');
+      if (users.find(u => u.email === email)) {
+        errEl.textContent = 'Bu e-posta adresi zaten kayıtlı.'; errEl.classList.remove('hidden'); return;
+      }
+
+      errEl.classList.add('hidden');
+
+      // Ücretli plan seçildiyse ödeme adımına geç
+      if (regPlan !== 'free') {
+        const planLabels = { pro: 'Profesyonel', business: 'İş' };
+        const planPrices = { pro: '₺499', business: '₺999' };
+        document.getElementById('pay-plan-name').textContent  = planLabels[regPlan];
+        document.getElementById('pay-plan-price').innerHTML   = planPrices[regPlan] + '<span class="text-sm font-normal text-white/40">/ay</span>';
+        // Benzersiz havale referans kodu
+        document.getElementById('eft-ref').textContent = 'HB-' + Math.random().toString(36).substr(2,6).toUpperCase();
+        document.getElementById('reg-form-wrap').classList.add('hidden');
+        document.getElementById('reg-payment-wrap').classList.remove('hidden');
+        return;
+      }
+
+      // Ücretsiz plan → direkt kayıt
+      completeRegistration();
+    }
+
+    function completeRegistration() {
+      const name  = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim().toLowerCase();
+      const pass  = document.getElementById('reg-pass').value;
+      const planNames = { free: 'Ücretsiz', pro: 'Profesyonel', business: 'İş' };
+      const users = JSON.parse(localStorage.getItem('hizbot_users') || '[]');
+      users.push({
+        id: Date.now(), name, email, pass,
+        role: 'user', plan: planNames[regPlan] || 'Ücretsiz',
+        status: 'aktif',
+        regDate: new Date().toLocaleDateString('tr-TR'),
+        lastLogin: '—', messages: 0, automations: 0, igDMs: 0, waMsgs: 0,
+        ip: '—', device: 'Web', browser: navigator.userAgent.split(' ').slice(-1)[0]
+      });
+      localStorage.setItem('hizbot_users', JSON.stringify(users));
+      document.getElementById('reg-form-wrap').classList.add('hidden');
+      document.getElementById('reg-payment-wrap').classList.add('hidden');
+      document.getElementById('reg-success').classList.remove('hidden');
+    }
+
+    function selectPayTab(tab) {
+      document.getElementById('ptab-card').classList.toggle('active', tab === 'card');
+      document.getElementById('ptab-eft').classList.toggle('active',  tab === 'eft');
+      document.getElementById('pay-card-form').classList.toggle('hidden', tab !== 'card');
+      document.getElementById('pay-eft-form').classList.toggle('hidden',  tab !== 'eft');
+    }
+
+    function formatCardNumber(input) {
+      let val = input.value.replace(/\D/g, '').substring(0, 16);
+      input.value = val.replace(/(.{4})/g, '$1 ').trim();
+      const display = val.padEnd(16, '•').replace(/(.{4})/g, '$1 ').trim();
+      document.getElementById('card-display-num').textContent = display;
+    }
+
+    function formatExpiry(input) {
+      let val = input.value.replace(/\D/g, '').substring(0, 4);
+      if (val.length >= 3) val = val.substring(0,2) + '/' + val.substring(2);
+      input.value = val;
+      document.getElementById('card-display-exp').textContent = val || 'MM/YY';
+    }
+
+    function doPayment() {
+      const num  = document.getElementById('card-number').value.replace(/\s/g,'');
+      const name = document.getElementById('card-name').value.trim();
+      const exp  = document.getElementById('card-exp').value;
+      const cvv  = document.getElementById('card-cvv').value;
+      const errEl = document.getElementById('pay-error');
+
+      if (num.length < 16) { errEl.textContent = 'Geçerli bir kart numarası giriniz.'; errEl.classList.remove('hidden'); return; }
+      if (!name)           { errEl.textContent = 'Kart sahibinin adını giriniz.'; errEl.classList.remove('hidden'); return; }
+      if (exp.length < 5)  { errEl.textContent = 'Son kullanım tarihini giriniz (AA/YY).'; errEl.classList.remove('hidden'); return; }
+      if (cvv.length < 3)  { errEl.textContent = 'CVV kodunu giriniz.'; errEl.classList.remove('hidden'); return; }
+
+      errEl.classList.add('hidden');
+      // Simüle ödeme işlemi
+      const btn = document.querySelector('#pay-card-form button[onclick="doPayment()"]');
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83"/></svg> İşleniyor...';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Ödemeyi Tamamla';
+        completeRegistration();
+      }, 1800);
+    }
+
+    function doEFTRegister() {
+      completeRegistration();
+    }
+
+    function copyIBAN() {
+      const iban = document.getElementById('iban-text').textContent.replace(/\s/g,'');
+      navigator.clipboard.writeText(iban).then(() => {
+        const btn = document.querySelector('button[onclick="copyIBAN()"]');
+        btn.style.color = '#4ade80';
+        setTimeout(() => btn.style.color = '', 1500);
+      });
+    }
+
+    function backToRegForm() {
+      document.getElementById('reg-payment-wrap').classList.add('hidden');
+      document.getElementById('reg-form-wrap').classList.remove('hidden');
+    }
+
+    // Close modals on overlay click
+    document.getElementById('modal-forgot').addEventListener('click', function(e) { if(e.target===this) closeForgot(); });
+    document.getElementById('modal-register').addEventListener('click', function(e) { if(e.target===this) closeRegister(); });
+  </script>
+
+  <!-- Şifremi Unuttum Modal -->
+  <div id="modal-forgot" class="modal-overlay">
+    <div class="modal-box">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h2 class="text-white font-bold text-lg">Şifremi Unuttum</h2>
+          <p class="text-white/40 text-xs mt-0.5">E-postanızı girin, Gmail üzerinden destek ekibine iletin.</p>
+        </div>
+        <button onclick="closeForgot()" class="text-white/30 hover:text-white/70 transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div id="forgot-result" class="hidden mb-4 px-4 py-3 rounded-xl text-sm flex items-center gap-2" style="background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.25); color:#4ade80;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Gmail açıldı. Mesajı gönderdikten sonra ekibimiz sizinle iletişime geçecektir.
+      </div>
+
+      <label class="block text-xs text-white/50 mb-1.5">E-posta Adresiniz</label>
+      <input id="forgot-email" type="email" placeholder="ornek@email.com" class="modal-input mb-5" />
+
+      <div class="flex gap-2">
+        <button onclick="sendForgot()" class="flex-1 py-3 rounded-xl text-sm font-semibold text-white transition-all" style="background:#7c3aed;">
+          Gmail'de Aç
+        </button>
+        <button onclick="closeForgot()" class="px-4 py-3 rounded-xl text-sm font-medium text-white/50 hover:text-white transition-colors" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08);">
+          İptal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kayıt Ol Modal -->
+  <div id="modal-register" class="modal-overlay">
+    <div class="modal-box" style="max-width:460px;">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h2 class="text-white font-bold text-lg">Hesap Oluştur</h2>
+          <p class="text-white/40 text-xs mt-0.5">Birkaç saniyede kayıt olun.</p>
+        </div>
+        <button onclick="closeRegister()" class="text-white/30 hover:text-white/70 transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div id="reg-form-wrap">
+        <div id="reg-error" class="hidden mb-4 px-4 py-3 rounded-xl text-sm" style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.25); color:#f87171;"></div>
+
+        <div class="space-y-3 mb-4">
+          <div>
+            <label class="block text-xs text-white/50 mb-1.5">Ad Soyad</label>
+            <input id="reg-name" type="text" placeholder="Adınız Soyadınız" class="modal-input" />
+          </div>
+          <div>
+            <label class="block text-xs text-white/50 mb-1.5">E-posta</label>
+            <input id="reg-email" type="email" placeholder="ornek@email.com" class="modal-input" />
+          </div>
+          <div>
+            <label class="block text-xs text-white/50 mb-1.5">Şifre</label>
+            <input id="reg-pass" type="password" placeholder="En az 6 karakter" class="modal-input" />
+          </div>
+        </div>
+
+        <label class="block text-xs text-white/50 mb-2">Plan Seçin</label>
+        <div class="flex gap-2 mb-5">
+          <div id="plan-free" class="plan-card selected" onclick="selectPlan('free')">
+            <div class="plan-name text-white text-xs font-bold mb-0.5">Ücretsiz</div>
+            <div class="text-white/35 text-xs">₺0/ay</div>
+          </div>
+          <div id="plan-pro" class="plan-card" onclick="selectPlan('pro')">
+            <div class="plan-name text-white text-xs font-bold mb-0.5">Profesyonel</div>
+            <div class="text-white/35 text-xs">₺499/ay</div>
+          </div>
+          <div id="plan-business" class="plan-card" onclick="selectPlan('business')">
+            <div class="plan-name text-white text-xs font-bold mb-0.5">İş</div>
+            <div class="text-white/35 text-xs">₺999/ay</div>
+          </div>
+        </div>
+
+        <!-- Şartlar onayı -->
+        <label class="flex items-start gap-2.5 cursor-pointer mb-4">
+          <input type="checkbox" id="reg-terms" class="terms-check mt-0.5" />
+          <span class="text-xs text-white/40 leading-relaxed">
+            <a href="kullanim-sartlari.html" target="_blank" class="text-violet-400 hover:underline">Kullanım Şartları</a>'nı ve
+            <a href="gizlilik-politikasi.html" target="_blank" class="text-violet-400 hover:underline">Gizlilik Politikası</a>'nı okudum, kabul ediyorum.
+          </span>
+        </label>
+
+        <button onclick="doRegister()" class="w-full py-3 rounded-xl text-sm font-semibold text-white" style="background:#7c3aed;">
+          Kayıt Ol
+        </button>
+        <p class="text-center text-xs text-white/25 mt-3">
+          Zaten hesabınız var mı? <a href="#" onclick="closeRegister()" class="text-violet-400 hover:underline">Giriş Yap</a>
+        </p>
+      </div>
+
+      <!-- ── Ödeme Adımı ── -->
+      <div id="reg-payment-wrap" class="hidden">
+
+        <!-- Seçilen plan özeti -->
+        <div id="pay-plan-summary" class="flex items-center justify-between mb-5 px-4 py-3 rounded-xl" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);">
+          <div>
+            <p class="text-xs text-white/40 mb-0.5">Seçilen Plan</p>
+            <p id="pay-plan-name" class="font-bold text-sm text-violet-300">Profesyonel</p>
+          </div>
+          <p id="pay-plan-price" class="text-2xl font-black text-white">₺499<span class="text-sm font-normal text-white/40">/ay</span></p>
+        </div>
+
+        <!-- Ödeme yöntemi tabları -->
+        <div class="flex gap-1.5 p-1 rounded-xl mb-4" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);">
+          <div class="pay-tab active" id="ptab-card" onclick="selectPayTab('card')">
+            <span class="flex items-center justify-center gap-1.5">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              Kredi / Banka Kartı
+            </span>
+          </div>
+          <div class="pay-tab" id="ptab-eft" onclick="selectPayTab('eft')">
+            <span class="flex items-center justify-center gap-1.5">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              Havale / EFT
+            </span>
+          </div>
+        </div>
+
+        <!-- Kart formu -->
+        <div id="pay-card-form">
+          <!-- Kart görseli -->
+          <div class="card-visual mb-4">
+            <div class="relative z-10">
+              <div class="flex justify-between items-start mb-4">
+                <svg width="32" height="22" viewBox="0 0 32 22" fill="none"><rect width="32" height="22" rx="4" fill="rgba(255,255,255,0.15)"/><rect x="2" y="8" width="28" height="5" fill="rgba(255,255,255,0.08)"/></svg>
+                <div class="text-right">
+                  <p class="text-white/40 text-xs">Hızbot</p>
+                  <p class="text-white/70 text-xs font-bold">Pay</p>
+                </div>
+              </div>
+              <p id="card-display-num" class="font-mono text-base font-bold tracking-widest text-white/90 mb-3">•••• •••• •••• ••••</p>
+              <div class="flex justify-between items-end">
+                <div>
+                  <p class="text-white/35 text-xs mb-0.5">Kart Sahibi</p>
+                  <p id="card-display-name" class="text-white font-semibold text-xs uppercase tracking-wide">ADI SOYADI</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-white/35 text-xs mb-0.5">Son Kullanım</p>
+                  <p id="card-display-exp" class="text-white font-semibold text-xs font-mono">MM/YY</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs text-white/50 mb-1.5">Kart Numarası</label>
+              <div class="relative">
+                <input id="card-number" type="text" placeholder="0000 0000 0000 0000" maxlength="19"
+                       class="modal-input w-full pr-10" oninput="formatCardNumber(this)" />
+                <div id="card-type-icon" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/30">
+                  <svg width="20" height="14" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="22" height="14" rx="2"/><line x1="1" y1="6" x2="23" y2="6"/></svg>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs text-white/50 mb-1.5">Kart Sahibinin Adı</label>
+              <input id="card-name" type="text" placeholder="AD SOYAD" class="modal-input w-full uppercase"
+                     oninput="document.getElementById('card-display-name').textContent = this.value.toUpperCase() || 'ADI SOYADI'" />
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-white/50 mb-1.5">Son Kullanım Tarihi</label>
+                <input id="card-exp" type="text" placeholder="AA/YY" maxlength="5"
+                       class="modal-input w-full font-mono" oninput="formatExpiry(this)" />
+              </div>
+              <div>
+                <label class="block text-xs text-white/50 mb-1.5">CVV</label>
+                <input id="card-cvv" type="password" placeholder="•••" maxlength="4"
+                       class="modal-input w-full font-mono" />
+              </div>
+            </div>
+          </div>
+
+          <div id="pay-error" class="hidden mt-3 px-3 py-2.5 rounded-xl text-xs" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;"></div>
+
+          <button onclick="doPayment()" class="w-full py-3 rounded-xl text-sm font-semibold text-white mt-4 flex items-center justify-center gap-2" style="background:#7c3aed;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Ödemeyi Tamamla
+          </button>
+
+          <!-- Güvenlik rozetleri -->
+          <div class="flex items-center justify-center gap-4 mt-3">
+            <div class="flex items-center gap-1 text-white/25 text-xs">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              256-bit SSL
+            </div>
+            <div class="flex items-center gap-1 text-white/25 text-xs">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              3D Secure
+            </div>
+            <div class="flex items-center gap-1 text-white/25 text-xs">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              İptal İmkânı
+            </div>
+          </div>
+        </div>
+
+        <!-- Havale / EFT formu -->
+        <div id="pay-eft-form" class="hidden">
+          <div class="rounded-xl p-4 space-y-3 mb-4" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);">
+            <p class="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Banka Bilgileri</p>
+            <div class="flex justify-between items-center">
+              <span class="text-xs text-white/40">Banka</span>
+              <span class="text-xs font-semibold text-white">Enpara</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-xs text-white/40">Hesap Sahibi</span>
+              <span class="text-xs font-semibold text-white">Kadir Tatar</span>
+            </div>
+            <div class="flex justify-between items-start gap-4">
+              <span class="text-xs text-white/40 flex-shrink-0">IBAN</span>
+              <div class="flex items-center gap-2">
+                <span id="iban-text" class="text-xs font-mono font-semibold text-white">TR87 0015 7000 0000 0104 1708 29</span>
+                <button onclick="copyIBAN()" class="text-violet-400 hover:text-violet-300 transition-colors" title="Kopyala">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-xs text-white/40">Açıklama (zorunlu)</span>
+              <span id="eft-ref" class="text-xs font-mono font-bold text-violet-400">HB-XXXXXX</span>
+            </div>
+          </div>
+          <div class="px-4 py-3 rounded-xl text-xs text-white/50 leading-relaxed mb-4" style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);">
+            <strong class="text-yellow-400">Önemli:</strong> Açıklama alanına referans kodunuzu mutlaka yazın. Ödemeniz 1-2 iş günü içinde onaylanacak ve hesabınız aktifleştirilecektir.
+          </div>
+          <button onclick="doEFTRegister()" class="w-full py-3 rounded-xl text-sm font-semibold text-white" style="background:#7c3aed;">
+            Havale Talebini Gönder
+          </button>
+        </div>
+
+        <button onclick="backToRegForm()" class="w-full py-2.5 rounded-xl text-xs font-medium text-white/40 hover:text-white/70 transition-colors mt-2">
+          ← Geri Dön
+        </button>
+      </div>
+
+      <div id="reg-success" class="hidden text-center py-4">
+        <div class="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style="background:rgba(74,222,128,0.15); border:1px solid rgba(74,222,128,0.3);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h3 class="text-white font-bold text-base mb-1">Kayıt Başarılı!</h3>
+        <p class="text-white/45 text-sm mb-5">Hesabınız oluşturuldu. Şimdi giriş yapabilirsiniz.</p>
+        <button onclick="closeRegister()" class="w-full py-3 rounded-xl text-sm font-semibold text-white" style="background:#7c3aed;">
+          Giriş Yap
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

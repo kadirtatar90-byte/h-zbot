@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gizlilik Politikası — Hızbot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #060608; color: #e5e7eb; }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 900px 700px at -5% 5%, rgba(124,58,237,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 700px 500px at 105% 90%, rgba(79,70,229,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 500px 400px at 60% 30%, rgba(124,58,237,0.07) 0%, transparent 50%);
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .glass-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); backdrop-filter: blur(20px); }
+    h2 { color: #a78bfa; font-weight: 700; font-size: 1.1rem; margin-top: 2rem; margin-bottom: 0.5rem; }
+    p, li { color: rgba(255,255,255,0.65); line-height: 1.8; font-size: 0.95rem; }
+    ul { list-style: disc; padding-left: 1.5rem; margin-top: 0.4rem; }
+    li { margin-bottom: 0.3rem; }
+    a { color: #a78bfa; }
+    a:hover { text-decoration: underline; }
+    .divider { border-color: rgba(255,255,255,0.07); margin: 1.5rem 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; font-size: 0.875rem; }
+    th { text-align: left; color: rgba(255,255,255,0.4); font-weight: 600; padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    td { padding: 0.6rem 0.75rem; color: rgba(255,255,255,0.6); border-bottom: 1px solid rgba(255,255,255,0.05); }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- Nav -->
+  <nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4" style="background:rgba(6,6,8,0.85); backdrop-filter:blur(16px); border-bottom:1px solid rgba(255,255,255,0.06);">
+    <a href="index.html" class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <span class="font-black text-white text-lg tracking-tight">Hızbot</span>
+    </a>
+    <a href="login.html" class="text-sm text-white/50 hover:text-white transition-colors">← Kayıt sayfasına dön</a>
+  </nav>
+
+  <!-- Content -->
+  <main class="max-w-3xl mx-auto px-6 pt-32 pb-24">
+    <div class="glass-card rounded-2xl p-8 md:p-12">
+
+      <div class="mb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-4" style="background:rgba(124,58,237,0.15); border:1px solid rgba(124,58,237,0.3); color:#a78bfa;">
+          Son güncelleme: 4 Mayıs 2026
+        </div>
+        <h1 class="text-3xl font-black text-white mb-3">Gizlilik Politikası</h1>
+        <p>Hızbot olarak kişisel verilerinizin güvenliğine büyük önem veriyoruz. Bu politika, hangi verileri topladığımızı, neden topladığımızı ve nasıl koruduğumuzu açıklamaktadır.</p>
+      </div>
+
+      <hr class="divider" />
+
+      <h2>1. Veri Sorumlusu</h2>
+      <p>6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") ve Genel Veri Koruma Yönetmeliği ("GDPR") kapsamında veri sorumlusu <strong class="text-white">Hızbot / turanai.com.tr</strong>'dir. Verilerinize ilişkin her türlü soru ve talebiniz için <a href="https://wa.me/905443873239">+90 544 387 32 39</a> numaralı WhatsApp hattımızdan bize ulaşabilirsiniz.</p>
+
+      <h2>2. Toplanan Kişisel Veriler</h2>
+      <p>Hızbot, hizmetlerin sunulması amacıyla aşağıdaki kişisel verileri işleyebilir:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Veri Kategorisi</th>
+            <th>Örnekler</th>
+            <th>Amaç</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Kimlik verileri</td>
+            <td>Ad, soyad</td>
+            <td>Hesap oluşturma ve kimlik doğrulama</td>
+          </tr>
+          <tr>
+            <td>İletişim verileri</td>
+            <td>E-posta adresi, telefon numarası</td>
+            <td>Bildirim gönderimi ve destek hizmetleri</td>
+          </tr>
+          <tr>
+            <td>Kullanım verileri</td>
+            <td>IP adresi, tarayıcı türü, oturum süresi</td>
+            <td>Güvenlik, analiz ve hizmet iyileştirme</td>
+          </tr>
+          <tr>
+            <td>Ödeme verileri</td>
+            <td>Fatura adresi (kart bilgileri saklanmaz)</td>
+            <td>Abonelik yönetimi</td>
+          </tr>
+          <tr>
+            <td>İletişim içerikleri</td>
+            <td>Gönderilen/alınan mesajlar (şifreli)</td>
+            <td>Otomasyon hizmetinin yürütülmesi</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>3. Verilerin İşlenme Amaçları</h2>
+      <p>Kişisel verileriniz aşağıdaki amaçlarla işlenmektedir:</p>
+      <ul>
+        <li>Hızbot hesabınızı oluşturmak ve yönetmek</li>
+        <li>Talep ettiğiniz otomasyon hizmetlerini sunmak</li>
+        <li>Güvenlik ihlallerini tespit etmek ve önlemek</li>
+        <li>Yasal yükümlülüklerimizi yerine getirmek</li>
+        <li>Hizmet kalitesini ölçmek ve iyileştirmek</li>
+        <li>Abonelik ve faturalandırma işlemlerini yönetmek</li>
+        <li>Teknik destek ve müşteri hizmetleri sağlamak</li>
+      </ul>
+
+      <h2>4. Hukuki Dayanak</h2>
+      <p>Kişisel verileriniz aşağıdaki hukuki dayanaklar çerçevesinde işlenmektedir:</p>
+      <ul>
+        <li><strong class="text-white">Sözleşmenin ifası:</strong> Kullanım Şartları kapsamındaki hizmetlerin sunulması</li>
+        <li><strong class="text-white">Açık rıza:</strong> Pazarlama iletişimleri ve isteğe bağlı veri işlemleri</li>
+        <li><strong class="text-white">Meşru menfaat:</strong> Güvenlik, dolandırıcılık önleme ve hizmet iyileştirme</li>
+        <li><strong class="text-white">Yasal yükümlülük:</strong> Vergi, muhasebe ve yasal raporlama gereklilikleri</li>
+      </ul>
+
+      <h2>5. Verilerin Paylaşılması</h2>
+      <p>Hızbot, kişisel verilerinizi üçüncü taraflarla satmaz veya kiralamaz. Verileriniz yalnızca şu durumlarda paylaşılabilir:</p>
+      <ul>
+        <li><strong class="text-white">Hizmet sağlayıcılar:</strong> Ödeme altyapısı, e-posta gönderimi, bulut depolama gibi teknik hizmet sunan iş ortakları (gizlilik sözleşmesi kapsamında)</li>
+        <li><strong class="text-white">Yasal zorunluluklar:</strong> Mahkeme kararı veya yetkili makam talebi doğrultusunda</li>
+        <li><strong class="text-white">Şirket devri:</strong> Birleşme veya satın alma süreçlerinde, önceden bilgilendirme yapılmak kaydıyla</li>
+      </ul>
+
+      <h2>6. Veri Güvenliği</h2>
+      <p>Kişisel verileriniz teknik ve idari güvenlik önlemleriyle korunmaktadır:</p>
+      <ul>
+        <li>Tüm bağlantılar TLS 1.2+ şifreleme protokolüyle güvence altına alınmaktadır.</li>
+        <li>Hassas veriler AES-256 standardında şifrelenerek saklanmaktadır.</li>
+        <li>Sisteme erişim yetkisi yalnızca gerekli personelle sınırlandırılmıştır.</li>
+        <li>Düzenli güvenlik testleri ve penetrasyon denetimleri gerçekleştirilmektedir.</li>
+        <li>Veri ihlali durumunda kullanıcılar ve ilgili otoriteler KVKK'nın öngördüğü süreler içinde bilgilendirilecektir.</li>
+      </ul>
+
+      <h2>7. Veri Saklama Süreleri</h2>
+      <p>Kişisel verileriniz, işlenme amacının gerektirdiği süre boyunca saklanır. Temel saklama süreleri şöyledir:</p>
+      <ul>
+        <li>Hesap verileri: Hesap silinmesinden itibaren 30 gün</li>
+        <li>Mesaj kayıtları: Son işlemden itibaren 12 ay</li>
+        <li>Finansal kayıtlar: Yasal düzenlemeler gereği 10 yıl</li>
+        <li>Güvenlik logları: 6 ay</li>
+      </ul>
+
+      <h2>8. Çerezler (Cookies)</h2>
+      <p>Hızbot, hizmet kalitesini artırmak amacıyla çerez kullanmaktadır. Kullanılan çerez türleri:</p>
+      <ul>
+        <li><strong class="text-white">Zorunlu çerezler:</strong> Oturum yönetimi ve kimlik doğrulama için gereklidir, devre dışı bırakılamaz.</li>
+        <li><strong class="text-white">Analitik çerezler:</strong> Kullanım istatistiklerinin toplanması amacıyla kullanılır; onayınıza tabidir.</li>
+        <li><strong class="text-white">Tercih çerezleri:</strong> Dil ve tema gibi kullanıcı tercihlerinin hatırlanmasını sağlar.</li>
+      </ul>
+
+      <h2>9. Haklarınız</h2>
+      <p>KVKK'nın 11. maddesi ve GDPR'ın 15–22. maddeleri kapsamında aşağıdaki haklara sahipsiniz:</p>
+      <ul>
+        <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme hakkı</li>
+        <li>Verilerinizin bir kopyasını talep etme hakkı (veri taşınabilirliği)</li>
+        <li>Yanlış veya eksik verilerin düzeltilmesini talep etme hakkı</li>
+        <li>Verilerin silinmesini ("unutulma hakkı") talep etme hakkı</li>
+        <li>Veri işlemeye itiraz etme veya işlemenin kısıtlanmasını talep etme hakkı</li>
+        <li>Otomatik karar alma ve profilleme işlemlerine itiraz etme hakkı</li>
+      </ul>
+      <p>Bu haklarınızı kullanmak için <a href="https://wa.me/905443873239">WhatsApp</a> aracılığıyla bizimle iletişime geçebilirsiniz. Talepler 30 gün içinde yanıtlanır.</p>
+
+      <h2>10. Üçüncü Taraf Platformlar</h2>
+      <p>Hızbot, WhatsApp Business API ve Instagram Graph API gibi üçüncü taraf platformlarla entegrasyon sunmaktadır. Bu platformların gizlilik politikaları için Meta Platforms'un ilgili gizlilik belgelerini incelemenizi öneririz. Hızbot, söz konusu platformların veri işleme uygulamalarından sorumlu değildir.</p>
+
+      <h2>11. Çocukların Gizliliği</h2>
+      <p>Hızbot hizmetleri 18 yaş altı bireylere yönelik değildir. 18 yaşından küçük kişilerin kişisel verilerini bilerek toplamıyoruz. Böyle bir durumun farkına varırsanız lütfen derhal bilgilendirin.</p>
+
+      <h2>12. Politika Değişiklikleri</h2>
+      <p>Bu Gizlilik Politikası zaman zaman güncellenebilir. Önemli değişiklikler öncesinde kayıtlı e-posta adresinize bildirim gönderilecektir. Güncel politikaya her zaman <strong class="text-white">turanai.com.tr/gizlilik-politikasi</strong> adresinden erişebilirsiniz.</p>
+
+      <h2>13. İletişim</h2>
+      <p>Gizlilik politikamıza ilişkin sorularınız veya veri talepleriniz için:</p>
+      <ul>
+        <li>WhatsApp: <a href="https://wa.me/905443873239">+90 544 387 32 39</a></li>
+        <li>Web sitesi: <a href="https://turanai.com.tr">turanai.com.tr</a></li>
+      </ul>
+
+      <hr class="divider" />
+
+      <div class="flex flex-col sm:flex-row gap-3 mt-6">
+        <a href="login.html" class="flex-1 text-center py-3 px-6 rounded-xl font-semibold text-sm transition-all" style="background:#7c3aed; color:white;">
+          Kabul Ediyorum — Kayıt Ol
+        </a>
+        <a href="index.html" class="flex-1 text-center py-3 px-6 rounded-xl font-semibold text-sm transition-all text-white/60 hover:text-white" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);">
+          Ana Sayfaya Dön
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+</body>
+</html>

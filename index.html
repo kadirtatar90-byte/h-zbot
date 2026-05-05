@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hızbot — AI Workflows ile İşlerinizi Otomatize Edin</title>
+  <meta name="description" content="Hızbot ile WhatsApp ve Instagram mesajlarınızı yapay zeka ile otomatikleştirin. 7/24 AI müşteri desteği, akıllı yanıtlar ve güçlü analizlerle işinizi büyütün." />
+  <meta property="og:title" content="Hızbot — AI Otomasyon Platformu" />
+  <meta property="og:description" content="WhatsApp ve Instagram otomasyonu ile müşteri iletişiminizi AI'ya bırakın. Ücretsiz başlayın." />
+  <meta property="og:url" content="https://turanai.com.tr" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Hızbot — AI Otomasyon Platformu" />
+  <meta name="twitter:description" content="WhatsApp ve Instagram otomasyonu ile müşteri iletişiminizi AI'ya bırakın." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #060608; color: #fff; }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 900px 700px at -5% 5%, rgba(124,58,237,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 700px 500px at 105% 90%, rgba(79,70,229,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 500px 400px at 60% 30%, rgba(124,58,237,0.07) 0%, transparent 50%);
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0d0d12; }
+    ::-webkit-scrollbar-thumb { background: #7c3aed; border-radius: 3px; }
+
+    /* Orb glow */
+    .hero-orb {
+      background: radial-gradient(ellipse 60% 50% at 50% 60%, #7c3aed 0%, #4f46e5 30%, #1e1b4b 65%, transparent 100%);
+    }
+
+    /* Card glass */
+    .glass-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Nav blur */
+    .nav-blur {
+      background: rgba(6,6,8,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* Purple gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #a78bfa, #7c3aed, #c4b5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Section badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.3);
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #a78bfa;
+      letter-spacing: 0.02em;
+    }
+    .badge-dot {
+      width: 6px; height: 6px;
+      background: #7c3aed;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #7c3aed;
+    }
+
+    /* Pricing highlighted */
+    .pricing-pro {
+      background: linear-gradient(160deg, rgba(124,58,237,0.25) 0%, rgba(79,70,229,0.1) 100%);
+      border: 1px solid rgba(124,58,237,0.5);
+    }
+
+    /* CTA section */
+    .cta-bg {
+      background: linear-gradient(135deg, rgba(124,58,237,0.7) 0%, rgba(79,70,229,0.6) 50%, rgba(109,40,217,0.7) 100%);
+      border: 1px solid rgba(167,139,250,0.3);
+    }
+
+    /* FAQ item */
+    .faq-item summary { list-style: none; }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item[open] summary .faq-icon { transform: rotate(180deg); }
+
+    /* Testimonial card */
+    .testimonial-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    /* Hover states */
+    .btn-primary {
+      background: #7c3aed;
+      transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    .btn-primary:hover {
+      background: #6d28d9;
+      box-shadow: 0 0 24px rgba(124,58,237,0.5);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-outline {
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    }
+    .btn-outline:hover {
+      border-color: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.05);
+      transform: translateY(-1px);
+    }
+
+    .nav-link {
+      transition: color 0.2s;
+      color: rgba(255,255,255,0.65);
+    }
+    .nav-link:hover { color: #fff; }
+
+    .feature-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      transition: border-color 0.25s, background 0.25s, transform 0.25s;
+    }
+    .feature-card:hover {
+      border-color: rgba(124,58,237,0.35);
+      background: rgba(124,58,237,0.06);
+      transform: translateY(-3px);
+    }
+
+    /* Grid noise overlay */
+    .grid-overlay {
+      background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* Glow effects */
+    .purple-glow { box-shadow: 0 0 40px rgba(124,58,237,0.3); }
+    .purple-glow-sm { box-shadow: 0 0 16px rgba(124,58,237,0.25); }
+
+    /* Mobile menu */
+    #mobile-menu { display: none; }
+    #mobile-menu.open { display: flex; }
+
+    /* Checkmark */
+    .check { color: #a78bfa; }
+
+    /* Floating icons in hero */
+    .floating { animation: float 6s ease-in-out infinite; }
+    .floating-2 { animation: float 6s ease-in-out infinite 2s; }
+    .floating-3 { animation: float 6s ease-in-out infinite 1s; }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+<!-- ========== NAVBAR ========== -->
+<nav class="nav-blur fixed top-0 left-0 right-0 z-50">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <!-- Logo -->
+    <a href="#home" class="flex items-center gap-2 group">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center purple-glow-sm transition-transform duration-200 group-hover:scale-105">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="text-white font-bold text-lg tracking-tight" id="nav-logo-text">Hızbot</span>
+    </a>
+
+    <!-- Desktop links -->
+    <div class="hidden md:flex items-center gap-8">
+      <a href="#home" class="nav-link text-sm font-medium">Ana Sayfa</a>
+      <a href="#about" class="nav-link text-sm font-medium">Hakkımızda</a>
+      <a href="#pricing" class="nav-link text-sm font-medium">Fiyatlar</a>
+      <a href="#blog" class="nav-link text-sm font-medium">Blog</a>
+      <a href="#contact" class="nav-link text-sm font-medium">İletişim</a>
+    </div>
+
+    <!-- CTA -->
+    <div class="hidden md:flex items-center gap-3">
+      <a href="login.html"
+         class="btn-outline px-4 py-2.5 rounded-lg text-sm font-medium text-white/70 inline-flex items-center gap-1.5 bg-transparent">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Giriş Yap
+      </a>
+      <a href="https://wa.me/905443873239" target="_blank"
+         class="btn-primary px-5 py-2.5 rounded-lg text-sm font-semibold text-white inline-flex items-center gap-2 purple-glow-sm">
+        Başla
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <!-- Mobile burger -->
+    <button id="burger" class="md:hidden p-2 text-white" aria-label="Menü">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="md:hidden flex-col px-6 pb-4 gap-3 border-t border-white/5">
+    <a href="#home" class="nav-link text-sm py-2">Ana Sayfa</a>
+    <a href="#about" class="nav-link text-sm py-2">Hakkımızda</a>
+    <a href="#pricing" class="nav-link text-sm py-2">Fiyatlar</a>
+    <a href="#blog" class="nav-link text-sm py-2">Blog</a>
+    <a href="#contact" class="nav-link text-sm py-2">İletişim</a>
+    <a href="https://wa.me/905443873239" target="_blank"
+       class="btn-primary mt-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white text-center">
+      Başla
+    </a>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section id="home" class="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden grid-overlay pt-16">
+  <!-- Background orb -->
+  <div class="hero-orb absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] pointer-events-none opacity-90"></div>
+  <!-- Extra radial glow -->
+  <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] pointer-events-none"
+       style="background: radial-gradient(ellipse at center, rgba(124,58,237,0.4) 0%, transparent 70%); filter: blur(40px);"></div>
+
+  <div class="relative z-10 max-w-4xl mx-auto px-6 py-20">
+    <div class="badge mb-6">
+      <span class="badge-dot"></span>
+      <span>AI Otomasyon Platformu</span>
+    </div>
+    <h1 class="text-5xl md:text-7xl font-black leading-tight tracking-tight mb-6">
+      AI Workflows'u<br/>
+      <span class="gradient-text">AI Ajan ile</span><br/>
+      Otomatize Edin
+    </h1>
+    <p class="text-white/50 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+      Favori uygulamalarınızı bağlayın, tetikleyiciler ayarlayın ve geri kalanı AI'ya bırakın — kod yazmanıza gerek yok. Dakikalar içinde hazır.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="https://wa.me/905443873239" target="_blank"
+         class="btn-primary px-8 py-4 rounded-xl text-base font-semibold text-white inline-flex items-center justify-center gap-2 purple-glow">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+        WhatsApp ile Başla
+      </a>
+      <a href="#pricing"
+         class="btn-outline px-8 py-4 rounded-xl text-base font-semibold text-white inline-flex items-center justify-center gap-2 bg-transparent">
+        Fiyatları Gör
+      </a>
+    </div>
+
+    <p class="mt-8 text-white/30 text-sm">150.000+ kullanıcı tarafından güvenilmektedir</p>
+  </div>
+</section>
+
+<!-- ========== PARTNER LOGOS ========== -->
+<section class="border-t border-white/5 py-12">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="flex flex-wrap justify-center items-center gap-10 opacity-40">
+      <div class="flex items-center gap-2 text-white font-semibold text-sm tracking-widest">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+        Teknosa
+      </div>
+      <div class="flex items-center gap-2 text-white font-semibold text-sm tracking-widest">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
+        Getir
+      </div>
+      <div class="flex items-center gap-2 text-white font-semibold text-sm tracking-widest">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 22 2 22"/></svg>
+        Trendyol
+      </div>
+      <div class="flex items-center gap-2 text-white font-semibold text-sm tracking-widest">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/></svg>
+        Hepsiburada
+      </div>
+      <div class="flex items-center gap-2 text-white font-semibold text-sm tracking-widest">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        BiTaksi
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== ABOUT ========== -->
+<section id="about" class="py-28 relative overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute inset-0" style="background: radial-gradient(ellipse 40% 40% at 80% 50%, rgba(124,58,237,0.12) 0%, transparent 70%);"></div>
+  </div>
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <div class="badge mb-6 mx-auto">
+      <span class="badge-dot"></span>
+      <span>Hakkımızda</span>
+    </div>
+    <h2 class="text-4xl md:text-5xl font-black leading-tight tracking-tight mb-6">
+      Yaratıcılık, İş Birliği Ve Üstün<br/>
+      Mükemmellik Üzerine İnşa Edildi,<br/>
+      <span class="gradient-text">Hızbot</span> — Sektörün Dinamik<br/>
+      Takımı Olağanüstü Sonuçlar İçin<br/>
+      Çalışıyor...
+    </h2>
+    <a href="https://wa.me/905443873239" target="_blank"
+       class="btn-primary mt-8 px-8 py-3.5 rounded-xl text-sm font-semibold text-white inline-flex items-center gap-2 purple-glow">
+      Başla
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- ========== FEATURES ========== -->
+<section id="features" class="py-20">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <div class="badge mb-4 mx-auto">
+        <span class="badge-dot"></span>
+        <span>AI Destekli Özellikler</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-black tracking-tight">Tüm AI İş Gücünü<br/>İnşa Edin, Ölçeklendirin ve Yönetin</h2>
+      <p class="text-white/40 mt-4 max-w-xl mx-auto leading-relaxed">Hızbot, veri darboğazlarını aşmanıza, analizleri kolaylaştırmanıza ve kararları kolaylıkla vermenize yardımcı olur.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Card 1 -->
+      <div class="feature-card rounded-2xl p-8">
+        <div class="w-12 h-12 rounded-xl bg-violet-500/15 flex items-center justify-center mb-5 border border-violet-500/20">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Sorunsuz API Entegrasyonları</h3>
+        <p class="text-white/40 text-sm leading-relaxed">En sevdiğiniz araçlarla bağlantı kurun ve herhangi bir uygulama ile birlikte hızlıca çalışın.</p>
+        <div class="mt-6 glass-card rounded-xl p-4">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4"/></svg>
+            </div>
+            <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+            </div>
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><path d="M12 22V12M12 12L7 7M12 12l5-5"/></svg>
+            </div>
+          </div>
+          <div class="h-1 w-full bg-white/5 rounded-full">
+            <div class="h-1 w-3/4 bg-gradient-to-r from-violet-500 to-purple-600 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="feature-card rounded-2xl p-8">
+        <div class="w-12 h-12 rounded-xl bg-violet-500/15 flex items-center justify-center mb-5 border border-violet-500/20">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Güvenilir Kimlik Doğrulama</h3>
+        <p class="text-white/40 text-sm leading-relaxed">Güçlü güvenlik ile her işlemi koruyun. Ekipleriniz her yerden güvenle erişebilir.</p>
+        <div class="mt-6 glass-card rounded-xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs text-white/40">Güvenlik Skoru</span>
+            <span class="text-xs font-bold text-violet-400">99%</span>
+          </div>
+          <div class="h-1.5 w-full bg-white/5 rounded-full">
+            <div class="h-1.5 w-[99%] bg-gradient-to-r from-violet-500 to-purple-400 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Instagram Automation -->
+      <div class="feature-card rounded-2xl p-8">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 border border-pink-500/30"
+             style="background: linear-gradient(135deg, rgba(236,72,153,0.2), rgba(251,146,60,0.15));">
+          <!-- Instagram icon -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="url(#igGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <defs>
+              <linearGradient id="igGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#f97316"/>
+                <stop offset="50%" stop-color="#ec4899"/>
+                <stop offset="100%" stop-color="#a855f7"/>
+              </linearGradient>
+            </defs>
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="url(#igGrad)" stroke="none"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Instagram Otomasyonu</h3>
+        <p class="text-white/40 text-sm leading-relaxed">DM'lere otomatik yanıt verin, yorum yönetin, abone akışlarını takip edin — hepsi tek panelden.</p>
+        <div class="mt-6 glass-card rounded-xl p-4">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="flex-1 text-xs text-white/40">Otomatik DM</div>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full text-pink-400 bg-pink-500/15 border border-pink-500/25">Aktif</span>
+          </div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 text-xs text-white/50">
+              <span class="w-1.5 h-1.5 rounded-full bg-pink-400 flex-shrink-0"></span>
+              Yeni takipçiye karşılama mesajı
+            </div>
+            <div class="flex items-center gap-2 text-xs text-white/50">
+              <span class="w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0"></span>
+              Yorumlara akıllı yanıt
+            </div>
+            <div class="flex items-center gap-2 text-xs text-white/50">
+              <span class="w-1.5 h-1.5 rounded-full bg-purple-400 flex-shrink-0"></span>
+              Anket & Story otomasyonu
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: WhatsApp Automation -->
+      <div class="feature-card rounded-2xl p-8">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 border border-green-500/30"
+             style="background: rgba(34,197,94,0.15);">
+          <!-- WhatsApp icon -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#22c55e">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold mb-2">WhatsApp Otomasyonu</h3>
+        <p class="text-white/40 text-sm leading-relaxed">Müşteri sorularını anında yanıtlayın, sipariş bildirimleri gönderin ve satış sürecinizi otomatize edin.</p>
+        <div class="mt-6 glass-card rounded-xl p-4">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="flex-1 text-xs text-white/40">Chatbot Aktif</div>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full text-green-400 bg-green-500/15 border border-green-500/25">7/24</span>
+          </div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 text-xs text-white/50">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0"></span>
+              Anlık müşteri desteği
+            </div>
+            <div class="flex items-center gap-2 text-xs text-white/50">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0"></span>
+              Sipariş & randevu bildirimi
+            </div>
+            <div class="flex items-center gap-2 text-xs text-white/50">
+              <span class="w-1.5 h-1.5 rounded-full bg-teal-400 flex-shrink-0"></span>
+              Toplu kampanya mesajı
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SECOND FEATURES SECTION ========== -->
+<section class="py-24 relative overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(124,58,237,0.08) 0%, transparent 70%);"></div>
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <div class="badge mb-4 mx-auto">
+        <span class="badge-dot"></span>
+        <span>Entegrasyon Ağı</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-black tracking-tight">Her Uygulama ile<br/>Sorunsuz Bağlantı Kurun</h2>
+      <p class="text-white/40 mt-4 max-w-xl mx-auto leading-relaxed">Hızbot, favori araçlarınızı birbirine bağlar ve iş akışlarınızı tek merkezden yönetmenizi sağlar.</p>
+    </div>
+
+    <!-- Center diagram -->
+    <div class="relative flex items-center justify-center py-12">
+      <!-- Center node -->
+      <div class="relative z-10 w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-800 flex items-center justify-center purple-glow">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <!-- Surrounding nodes -->
+      <div class="absolute inset-0 flex items-center justify-center">
+        <!-- Lines -->
+        <div class="w-[500px] h-[500px] relative hidden md:block">
+          <div class="absolute top-1/2 left-0 w-1/2 h-px bg-gradient-to-r from-transparent to-violet-500/50 -translate-y-1/2"></div>
+          <div class="absolute top-1/2 right-0 w-1/2 h-px bg-gradient-to-l from-transparent to-violet-500/50 -translate-y-1/2"></div>
+          <div class="absolute left-1/2 top-0 h-1/2 w-px bg-gradient-to-b from-transparent to-violet-500/50 -translate-x-1/2"></div>
+          <div class="absolute left-1/2 bottom-0 h-1/2 w-px bg-gradient-to-t from-transparent to-violet-500/50 -translate-x-1/2"></div>
+
+          <!-- Corner nodes -->
+          <div class="floating absolute top-6 left-6 w-14 h-14 glass-card rounded-xl flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83"/></svg>
+          </div>
+          <div class="floating-2 absolute top-6 right-6 w-14 h-14 glass-card rounded-xl flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4"/></svg>
+          </div>
+          <div class="floating-3 absolute bottom-6 left-6 w-14 h-14 glass-card rounded-xl flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="floating absolute bottom-6 right-6 w-14 h-14 glass-card rounded-xl flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PRICING ========== -->
+<section id="pricing" class="py-24 relative overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse 50% 60% at 50% 0%, rgba(124,58,237,0.1) 0%, transparent 70%);"></div>
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <div class="badge mb-4 mx-auto">
+        <span class="badge-dot"></span>
+        <span>Fiyatlandırma</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-black tracking-tight">Basit Planlar, Ölçeklenebilir Güç</h2>
+      <p class="text-white/40 mt-4 max-w-xl mx-auto leading-relaxed">İhtiyaçlarınıza göre seçin. İstediğiniz zaman yükseltin veya iptal edin.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      <!-- Free Plan -->
+      <div class="glass-card rounded-2xl p-8 flex flex-col">
+        <div class="mb-6">
+          <p class="text-white/50 text-sm font-medium mb-2">Ücretsiz Plan</p>
+          <div class="flex items-end gap-2 flex-wrap">
+            <span class="text-white/30 line-through text-xl hidden" id="price-free-old"></span>
+            <span class="text-5xl font-black" id="price-free">₺0</span>
+            <span class="text-white/40 text-sm mb-2">/ay</span>
+          </div>
+        </div>
+        <a href="https://wa.me/905443873239" target="_blank"
+           class="btn-outline w-full py-3 rounded-xl text-sm font-semibold text-white text-center bg-transparent mb-8">
+          Hemen Başla
+        </a>
+        <div>
+          <p class="text-xs text-white/40 font-semibold uppercase tracking-wider mb-4">Neler Dahil</p>
+          <ul class="space-y-3 text-sm text-white/60">
+            <li class="flex gap-2.5"><span class="check">✓</span> 5 AI iş akışı</li>
+            <li class="flex gap-2.5"><span class="check">✓</span> 1.000 görev/ay</li>
+            <li class="flex gap-2.5"><span class="check">✓</span> 3 entegrasyon</li>
+            <li class="flex gap-2.5"><span class="check">✓</span> Temel destek</li>
+            <li class="flex gap-2.5"><span class="check">✓</span> 7 günlük geçmiş</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Pro Plan (highlighted) -->
+      <div class="pricing-pro rounded-2xl p-8 flex flex-col relative overflow-hidden">
+        <div class="absolute top-0 right-0 bg-violet-600 text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl">
+          EN POPÜLER
+        </div>
+        <div class="mb-6">
+          <p class="text-violet-300 text-sm font-medium mb-2">Profesyonel Plan</p>
+          <div class="flex items-end gap-2 flex-wrap">
+            <span class="text-white/30 line-through text-xl hidden" id="price-pro-old"></span>
+            <span class="text-5xl font-black" id="price-pro">₺499</span>
+            <span class="text-white/40 text-sm mb-2">/ay</span>
+          </div>
+        </div>
+        <a href="https://wa.me/905443873239" target="_blank"
+           class="btn-primary w-full py-3 rounded-xl text-sm font-semibold text-white text-center mb-8 purple-glow">
+          Hemen Başla
+        </a>
+        <div>
+          <p class="text-xs text-white/40 font-semibold uppercase tracking-wider mb-4">Neler Dahil</p>
+          <ul class="space-y-3 text-sm text-white/70">
+            <li class="flex gap-2.5"><span class="check">✓</span> 50 AI iş akışı</li>
+            <li class="flex gap-2.5"><span class="check">✓</span> 25.000 görev/ay</li>
+            <li class="flex gap-2.5"><span class="check">✓</span> Sınırsız entegrasyon</li>
+            <li class="flex gap-2.5"><span class="check">✓</span> Öncelikli destek</li>
+            <li class="flex gap-2.5"><span class="check">✓</span> 30 günlük geçmiş</li>
+            <li class="flex gap-2.5"><span class="check">✓</span> Gelişmiş analitik</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Business Plan -->
+      <div class="glass-card rounded-2xl p-8 flex flex-col">
+        <div class="mb-6">
+          <p class="text-white/50 text-sm font-medium mb-2">İş Planı</p>
+          <div class="flex items-end gap-2">
+            <span class="text-white/30 line-through text-xl" id="price-biz-old">₺1.099</span>
+            <span class="text-5xl font-black" id="price-biz">₺999</span>
+            <span class="text-white/40 text-sm mb-2">/ay</span>
+          </div>
+        </div>
+        <a href="https://wa.me/905443873239" target="_blank"
+           class="btn-outline w-full py-3 rounded-xl text-sm font-semibold text-white text-center bg-transparent mb-8">
+          Hemen Başla
+        </a>
+        <div>
+          <p class="text-xs text-white/40 font-semibold uppercase tracking-wider mb-4">Neler Dahil</p>
+          <ul class="space-y-3 text-sm text-white/60">
+            <li class="flex gap-2.5"><span class="check">✓</span> Sınırsız AI iş akışı</li>
+            <li class="flex gap-2.5"><span class="check">✓</span> 500.000 görev/ay</li>
+            <li class="flex gap-2.5"><span class="check">✓</span> 100+ entegrasyon</li>
+            <li class="flex gap-2.5"><span class="check">✓</span> 7/24 VIP destek</li>
+            <li class="flex gap-2.5"><span class="check">✓</span> 90 günlük geçmiş</li>
+            <li class="flex gap-2.5"><span class="check">✓</span> Özel AI modelleri</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TESTIMONIALS ========== -->
+<section class="py-24 relative">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <div class="badge mb-4 mx-auto">
+        <span class="badge-dot"></span>
+        <span>Müşteri Görüşleri</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-black tracking-tight">Kullanıcılarımız Ne Diyor</h2>
+      <p class="text-white/40 mt-4 max-w-xl mx-auto leading-relaxed">Binlerce memnun müşterimizin deneyimlerini okuyun.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <!-- Testimonial 1 -->
+      <div class="testimonial-card rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center text-sm font-bold">SA</div>
+          <div>
+            <p class="font-semibold text-sm">Selin Arslan</p>
+            <p class="text-white/40 text-xs">Trendyol</p>
+          </div>
+        </div>
+        <p class="text-white/70 text-sm leading-relaxed">"Hızbot sayesinde Instagram DM yanıt süremiz sıfıra indi. Müşterilerimiz artık anında cevap alıyor ve satışlarımız %35 arttı."</p>
+        <div class="flex gap-0.5 mt-4">
+          <span class="text-violet-400 text-xs">★★★★★</span>
+        </div>
+      </div>
+
+      <!-- Testimonial 2 -->
+      <div class="testimonial-card rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-600 flex items-center justify-center text-sm font-bold">JR</div>
+          <div>
+            <p class="font-semibold text-sm">Kemal Yıldız</p>
+            <p class="text-white/40 text-xs">Getir</p>
+          </div>
+        </div>
+        <p class="text-white/70 text-sm leading-relaxed">"WhatsApp otomasyonu kurulumu çok kolaydı. Kurye bildirimlerini tamamen otomatize ettik, destek ekibimizin yükü yarı yarıya azaldı."</p>
+        <div class="flex gap-0.5 mt-4">
+          <span class="text-violet-400 text-xs">★★★★★</span>
+        </div>
+      </div>
+
+      <!-- Testimonial 3 -->
+      <div class="testimonial-card rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-rose-600 flex items-center justify-center text-sm font-bold">EP</div>
+          <div>
+            <p class="font-semibold text-sm">Ayşe Polat</p>
+            <p class="text-white/40 text-xs">Teknosa</p>
+          </div>
+        </div>
+        <p class="text-white/70 text-sm leading-relaxed">"7/24 çalışan AI chatbot ile hafta sonu bile müşteri kaybetmiyoruz. Hızbot gerçekten işimizi dönüştürdü, kesinlikle tavsiye ediyorum."</p>
+        <div class="flex gap-0.5 mt-4">
+          <span class="text-violet-400 text-xs">★★★★★</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== FAQ ========== -->
+<section id="faq" class="py-24 relative">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+      <!-- Left -->
+      <div>
+        <div class="badge mb-4">
+          <span class="badge-dot"></span>
+          <span>SSS</span>
+        </div>
+        <h2 class="text-4xl font-black tracking-tight mb-4">Sıkça Sorulan<br/>Sorular</h2>
+        <p class="text-white/40 leading-relaxed mb-6">Başka sorunuz mu var? Ekibimizle iletişime geçin.</p>
+        <a href="https://wa.me/905443873239" target="_blank"
+           class="btn-primary px-6 py-3 rounded-xl text-sm font-semibold text-white inline-flex items-center gap-2">
+          Ekibimize Ulaşın
+        </a>
+      </div>
+
+      <!-- Right: FAQ items -->
+      <div class="space-y-3">
+        <details class="faq-item glass-card rounded-xl overflow-hidden group">
+          <summary class="flex items-center justify-between p-5 cursor-pointer">
+            <span class="text-sm font-semibold">Hızbot'u kurmak ne kadar sürer?</span>
+            <svg class="faq-icon w-4 h-4 text-violet-400 transition-transform duration-200 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="px-5 pb-5 text-white/50 text-sm leading-relaxed">
+            Çoğu müşteri Hızbot'u 15 dakika içinde aktif hale getiriyor. Hesap oluşturduktan sonra WhatsApp Business API veya Instagram hesabınızı bağlamanız yeterli — sihirbaz sizi adım adım yönlendirir.
+          </div>
+        </details>
+
+        <details class="faq-item glass-card rounded-xl overflow-hidden">
+          <summary class="flex items-center justify-between p-5 cursor-pointer">
+            <span class="text-sm font-semibold">Hangi platformlarla entegrasyon yapılabiliyor?</span>
+            <svg class="faq-icon w-4 h-4 text-violet-400 transition-transform duration-200 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="px-5 pb-5 text-white/50 text-sm leading-relaxed">
+            Şu anda WhatsApp Business API ve Instagram DM entegrasyonu desteklenmektedir. Yakında Telegram, e-posta ve CRM (Shopify, WooCommerce, HubSpot) entegrasyonları da eklenecektir.
+          </div>
+        </details>
+
+        <details class="faq-item glass-card rounded-xl overflow-hidden">
+          <summary class="flex items-center justify-between p-5 cursor-pointer">
+            <span class="text-sm font-semibold">Aboneliğimi istediğim zaman iptal edebilir miyim?</span>
+            <svg class="faq-icon w-4 h-4 text-violet-400 transition-transform duration-200 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="px-5 pb-5 text-white/50 text-sm leading-relaxed">
+            Evet, herhangi bir taahhüt yoktur. İptal ettiğinizde mevcut fatura döneminizin sonuna kadar hizmet almaya devam edersiniz. Kalan süre için ücret iadesi yapılmaz.
+          </div>
+        </details>
+
+        <details class="faq-item glass-card rounded-xl overflow-hidden">
+          <summary class="flex items-center justify-between p-5 cursor-pointer">
+            <span class="text-sm font-semibold">AI yanıtlarını özelleştirebilir miyim?</span>
+            <svg class="faq-icon w-4 h-4 text-violet-400 transition-transform duration-200 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="px-5 pb-5 text-white/50 text-sm leading-relaxed">
+            Kesinlikle. Botunuzun ton, dil ve kişiliğini belirleyebilir; sık sorulan sorular için hazır yanıtlar oluşturabilir, çalışma saatleri ve yönlendirme kuralları ayarlayabilirsiniz.
+          </div>
+        </details>
+
+        <details class="faq-item glass-card rounded-xl overflow-hidden">
+          <summary class="flex items-center justify-between p-5 cursor-pointer">
+            <span class="text-sm font-semibold">Ücretsiz plan ile başlayabilir miyim?</span>
+            <svg class="faq-icon w-4 h-4 text-violet-400 transition-transform duration-200 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="px-5 pb-5 text-white/50 text-sm leading-relaxed">
+            Evet! Ücretsiz planımız kredi kartı gerekmeden sonsuza kadar kullanılabilir. Aylık 500 mesaja kadar AI yanıtı ve 1 entegrasyon hakkı içerir. İhtiyacınız büyüdükçe ücretli planlara geçebilirsiniz.
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== BLOG ========== -->
+<section id="blog" class="py-24 relative">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <div class="badge mb-4 mx-auto">
+        <span class="badge-dot"></span>
+        <span>Blog</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-black tracking-tight">Son Yazılar</h2>
+      <p class="text-white/40 mt-4 max-w-xl mx-auto leading-relaxed">AI otomasyon dünyasından güncel haberler, ipuçları ve başarı hikayeleri.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Blog Card 1 -->
+      <div class="feature-card rounded-2xl overflow-hidden group cursor-pointer">
+        <div class="h-44 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(124,58,237,0.4) 0%, rgba(79,70,229,0.2) 100%);">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.6)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="rgba(167,139,250,0.6)" stroke="none"/></svg>
+          </div>
+          <div class="absolute top-4 left-4">
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full text-pink-400 bg-pink-500/20 border border-pink-500/30">Instagram</span>
+          </div>
+        </div>
+        <div class="p-6">
+          <p class="text-white/35 text-xs mb-2">15 Nisan 2026 · 5 dk okuma</p>
+          <h3 class="font-bold text-base mb-2 group-hover:text-violet-300 transition-colors">Instagram DM Otomasyonu ile Satışları %40 Artırmanın 5 Yolu</h3>
+          <p class="text-white/45 text-sm leading-relaxed">Doğru mesaj şablonları ve tetikleyicilerle Instagram'dan daha fazla satış elde edin...</p>
+        </div>
+      </div>
+
+      <!-- Blog Card 2 -->
+      <div class="feature-card rounded-2xl overflow-hidden group cursor-pointer">
+        <div class="h-44 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(34,197,94,0.25) 0%, rgba(16,185,129,0.15) 100%);">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="rgba(74,222,128,0.5)"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          </div>
+          <div class="absolute top-4 left-4">
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full text-green-400 bg-green-500/20 border border-green-500/30">WhatsApp</span>
+          </div>
+        </div>
+        <div class="p-6">
+          <p class="text-white/35 text-xs mb-2">8 Nisan 2026 · 7 dk okuma</p>
+          <h3 class="font-bold text-base mb-2 group-hover:text-violet-300 transition-colors">WhatsApp Business API ile 7/24 Müşteri Desteği Nasıl Kurulur?</h3>
+          <p class="text-white/45 text-sm leading-relaxed">Adım adım rehberle WhatsApp chatbotunuzu dakikalar içinde hayata geçirin...</p>
+        </div>
+      </div>
+
+      <!-- Blog Card 3 -->
+      <div class="feature-card rounded-2xl overflow-hidden group cursor-pointer">
+        <div class="h-44 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(124,58,237,0.3) 0%, rgba(109,40,217,0.2) 100%);">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.6)" stroke-width="1.5" stroke-linecap="round"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>
+          </div>
+          <div class="absolute top-4 left-4">
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full text-violet-300 bg-violet-500/20 border border-violet-500/30">AI Rehber</span>
+          </div>
+        </div>
+        <div class="p-6">
+          <p class="text-white/35 text-xs mb-2">1 Nisan 2026 · 4 dk okuma</p>
+          <h3 class="font-bold text-base mb-2 group-hover:text-violet-300 transition-colors">2026'da İş Süreçlerini Otomatize Etmenin En İyi 10 Yöntemi</h3>
+          <p class="text-white/45 text-sm leading-relaxed">Manuel iş yükünüzü azaltın, zamandan ve maliyetten tasarruf edin...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA BANNER ========== -->
+<section class="py-16 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="cta-bg rounded-3xl p-12 text-center relative overflow-hidden">
+      <!-- Background decoration -->
+      <div class="absolute top-4 right-8 w-6 h-6 border border-white/20 rounded-full"></div>
+      <div class="absolute bottom-8 right-16 w-4 h-4 border border-white/20 rounded-full"></div>
+      <div class="absolute top-8 left-16 w-5 h-5 border border-white/20 rounded-full"></div>
+      <div class="absolute bottom-4 left-8 w-3 h-3 bg-white/10 rounded-full"></div>
+
+      <div class="relative z-10">
+        <div class="badge mb-6 mx-auto" style="background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.2); color: #fff;">
+          <span class="w-1.5 h-1.5 bg-white rounded-full"></span>
+          <span>Hemen Başla</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-black mb-4">Daha Akıllıca Otomatize Etmeye<br/>Hazır Mısınız?</h2>
+        <p class="text-white/70 mb-8 max-w-lg mx-auto leading-relaxed">Dakikalar içinde güçlü iş akışları oluşturmaya başlayın. İster bir startup başlatıyor, ister bir kurumsal ölçeklendiriyor olun — araçlar sizi her seviyede destekler.</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="https://wa.me/905443873239" target="_blank"
+             class="px-8 py-3.5 rounded-xl text-sm font-semibold text-violet-900 bg-white hover:bg-white/90 transition-colors duration-200 inline-flex items-center justify-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+            WhatsApp ile Başla
+          </a>
+          <a href="#pricing"
+             class="px-8 py-3.5 rounded-xl text-sm font-semibold text-white border border-white/30 hover:bg-white/10 transition-colors duration-200 inline-flex items-center justify-center">
+            Fiyatları Gör
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer id="contact" class="border-t border-white/5 mt-8">
+  <!-- Contact + newsletter row -->
+  <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-8 border-b border-white/5">
+    <div>
+      <h3 class="text-xl font-bold mb-2">Şimdi İletişime Geçin</h3>
+      <p class="text-white/40 text-sm mb-5">İnşa edin, uyarlayın ve büyüyün.</p>
+      <a href="https://wa.me/905443873239" target="_blank"
+         class="btn-primary px-6 py-3 rounded-xl text-sm font-semibold text-white inline-flex items-center gap-2">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+        WhatsApp ile İletişim
+      </a>
+    </div>
+    <div>
+      <h3 class="text-xl font-bold mb-2">Hızbot Bültenine Abone Ol</h3>
+      <p class="text-white/40 text-sm mb-5">Güncel kalın ve bilgi sahibi olun.</p>
+      <div class="flex gap-2">
+        <input type="email" placeholder="E-posta adresinizi girin"
+               class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/30 outline-none focus:border-violet-500 transition-colors duration-200" />
+        <button class="btn-primary px-5 py-3 rounded-xl text-sm font-semibold text-white whitespace-nowrap">
+          Abone Ol
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main footer links -->
+  <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-5 gap-8">
+    <!-- Brand -->
+    <div class="col-span-2 md:col-span-1">
+      <a href="#home" class="flex items-center gap-2 mb-4">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="text-white font-bold" id="footer-logo-text">Hızbot</span>
+      </a>
+      <a id="footer-email-link" href="https://wa.me/905443873239" target="_blank" class="text-white/40 text-xs leading-relaxed hover:text-white transition-colors">kadirtatar90@gmail.com</a>
+      <p class="text-white/40 text-xs mt-1" id="footer-phone">+90 544 387 32 39</p>
+    </div>
+
+    <!-- Quick Links -->
+    <div>
+      <p class="text-white/60 text-xs font-semibold uppercase tracking-wider mb-4">Hızlı Linkler</p>
+      <ul class="space-y-2.5">
+        <li><a href="#home" class="text-white/40 text-sm hover:text-white transition-colors duration-150">Ana Sayfa</a></li>
+        <li><a href="#about" class="text-white/40 text-sm hover:text-white transition-colors duration-150">Hakkımızda</a></li>
+        <li><a href="#features" class="text-white/40 text-sm hover:text-white transition-colors duration-150">Özellikler</a></li>
+        <li><a href="#pricing" class="text-white/40 text-sm hover:text-white transition-colors duration-150">Fiyatlar</a></li>
+      </ul>
+    </div>
+
+    <!-- Company -->
+    <div>
+      <p class="text-white/60 text-xs font-semibold uppercase tracking-wider mb-4">Şirket</p>
+      <ul class="space-y-2.5">
+        <li><a href="#about" class="text-white/40 text-sm hover:text-white transition-colors duration-150">Hakkımızda</a></li>
+        <li><a href="#features" class="text-white/40 text-sm hover:text-white transition-colors duration-150">Ürün</a></li>
+        <li><a href="#features" class="text-white/40 text-sm hover:text-white transition-colors duration-150">Entegrasyonlar</a></li>
+        <li><a href="https://wa.me/905443873239" target="_blank" class="text-white/40 text-sm hover:text-white transition-colors duration-150">İletişim</a></li>
+      </ul>
+    </div>
+
+    <!-- Others -->
+    <div>
+      <p class="text-white/60 text-xs font-semibold uppercase tracking-wider mb-4">Diğer</p>
+      <ul class="space-y-2.5">
+        <li><a href="#faq" class="text-white/40 text-sm hover:text-white transition-colors duration-150">SSS</a></li>
+        <li><a href="#blog" class="text-white/40 text-sm hover:text-white transition-colors duration-150">Blog</a></li>
+        <li><a href="https://wa.me/905443873239" target="_blank" class="text-white/40 text-sm hover:text-white transition-colors duration-150">İletişim</a></li>
+      </ul>
+    </div>
+
+    <!-- Social -->
+    <div>
+      <p class="text-white/60 text-xs font-semibold uppercase tracking-wider mb-4">Sosyal Medya</p>
+      <ul class="space-y-2.5">
+        <li id="footer-ig-li" class="hidden"><a id="footer-ig" href="#" target="_blank" class="text-white/40 text-sm hover:text-white transition-colors duration-150">Instagram</a></li>
+        <li id="footer-fb-li" class="hidden"><a id="footer-fb" href="#" target="_blank" class="text-white/40 text-sm hover:text-white transition-colors duration-150">Facebook</a></li>
+        <li><a href="https://wa.me/905443873239" target="_blank" class="text-white/40 text-sm hover:text-white transition-colors duration-150">WhatsApp</a></li>
+        <li id="footer-tt-li" class="hidden"><a id="footer-tt" href="#" target="_blank" class="text-white/40 text-sm hover:text-white transition-colors duration-150">TikTok</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Bottom -->
+  <div class="border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-3">
+      <p class="text-white/10 font-black text-5xl tracking-tighter select-none">Hızbot</p>
+      <p class="text-white/25 text-xs" id="footer-copyright">© 2026 Hızbot. Tüm Hakları Saklıdır.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ========== WHATSAPP FLOATING ========== -->
+<a href="https://wa.me/905443873239" target="_blank"
+   class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#25D366] flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-200"
+   aria-label="WhatsApp ile iletişim">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
+    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+  </svg>
+</a>
+
+<script>
+  // Mobile menu toggle
+  document.getElementById('burger').addEventListener('click', () => {
+    const menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('open');
+  });
+
+  // Smooth scroll for anchor links + close mobile menu on click
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        // Close mobile menu if open
+        document.getElementById('mobile-menu').classList.remove('open');
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Copyright year
+  document.querySelectorAll('[data-year]').forEach(el => {
+    el.textContent = new Date().getFullYear();
+  });
+
+  // Update copyright year
+  const footerCopyright = document.getElementById('footer-copyright');
+  if (footerCopyright) {
+    footerCopyright.textContent = `© ${new Date().getFullYear()} Hızbot. Tüm Hakları Saklıdır.`;
+  }
+
+  // ── Admin Site Ayarları → Anasayfaya Uygula ──
+  (function applySiteSettings() {
+    try {
+      const s = JSON.parse(localStorage.getItem('hizbot_site_settings') || '{}');
+
+      // Site adı
+      if (s.siteName) {
+        const targets = ['nav-logo-text','footer-logo-text'];
+        targets.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = s.siteName; });
+        document.title = s.siteName + (s.slogan ? ' — ' + s.slogan : '');
+      }
+
+      // Slogan → meta title
+      if (s.slogan && s.siteName) {
+        document.title = s.siteName + ' — ' + s.slogan;
+      }
+
+      // SEO meta etiketler
+      if (s.seoTitle) document.title = s.seoTitle;
+      if (s.seoDesc) {
+        const m = document.querySelector('meta[name="description"]');
+        if (m) m.setAttribute('content', s.seoDesc);
+      }
+      if (s.keywords) {
+        let km = document.querySelector('meta[name="keywords"]');
+        if (!km) { km = document.createElement('meta'); km.name = 'keywords'; document.head.appendChild(km); }
+        km.setAttribute('content', s.keywords);
+      }
+
+      // WhatsApp numarası — sayfadaki tüm wa.me linklerini güncelle
+      if (s.whatsapp) {
+        const waNum = s.whatsapp.replace(/\D/g, '');
+        document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
+          a.href = 'https://wa.me/' + waNum;
+        });
+      }
+
+      // Footer telefon
+      if (s.phone) {
+        const el = document.getElementById('footer-phone');
+        if (el) el.textContent = s.phone;
+      }
+
+      // Footer e-posta
+      if (s.email) {
+        const el = document.getElementById('footer-email-link');
+        if (el) el.textContent = s.email;
+      }
+
+      // Fiyatlar
+      if (s.priceFree !== undefined && s.priceFree !== '') {
+        const el = document.getElementById('price-free');
+        if (el) el.textContent = '₺' + s.priceFree;
+      }
+      { const el = document.getElementById('price-free-old');
+        if (el) { if (s.priceFreeOld) { el.textContent = '₺' + s.priceFreeOld; el.classList.remove('hidden'); } else { el.classList.add('hidden'); } } }
+      if (s.pricePro !== undefined && s.pricePro !== '') {
+        const el = document.getElementById('price-pro');
+        if (el) el.textContent = '₺' + s.pricePro;
+      }
+      { const el = document.getElementById('price-pro-old');
+        if (el) { if (s.priceProOld) { el.textContent = '₺' + s.priceProOld; el.classList.remove('hidden'); } else { el.classList.add('hidden'); } } }
+      if (s.priceBiz !== undefined && s.priceBiz !== '') {
+        const el = document.getElementById('price-biz');
+        if (el) el.textContent = '₺' + s.priceBiz;
+      }
+      if (s.priceBizOld !== undefined && s.priceBizOld !== '') {
+        const el = document.getElementById('price-biz-old');
+        if (el) el.textContent = '₺' + Number(s.priceBizOld).toLocaleString('tr');
+      }
+
+      // Sosyal medya linkleri (footer'da gizli → görünür)
+      if (s.instagram) {
+        const li = document.getElementById('footer-ig-li');
+        const a  = document.getElementById('footer-ig');
+        if (li && a) { a.href = 'https://www.instagram.com/' + s.instagram; li.classList.remove('hidden'); }
+      }
+      if (s.facebook) {
+        const li = document.getElementById('footer-fb-li');
+        const a  = document.getElementById('footer-fb');
+        if (li && a) { a.href = 'https://www.facebook.com/' + s.facebook; li.classList.remove('hidden'); }
+      }
+      if (s.tiktok) {
+        const li = document.getElementById('footer-tt-li');
+        const a  = document.getElementById('footer-tt');
+        if (li && a) { a.href = 'https://www.tiktok.com/@' + s.tiktok; li.classList.remove('hidden'); }
+      }
+    } catch(e) {}
+  })();
+</script>
+</body>
+</html>

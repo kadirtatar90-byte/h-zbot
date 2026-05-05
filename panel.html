@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hızbot — Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #060608; color: #fff; }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 900px 700px at -5% 5%, rgba(124,58,237,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 700px 500px at 105% 90%, rgba(79,70,229,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 500px 400px at 60% 30%, rgba(124,58,237,0.07) 0%, transparent 50%);
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #0d0d12; }
+    ::-webkit-scrollbar-thumb { background: #7c3aed; border-radius: 3px; }
+
+    .sidebar {
+      background: rgba(255,255,255,0.02);
+      border-right: 1px solid rgba(255,255,255,0.06);
+      width: 240px; flex-shrink: 0;
+    }
+    .glass-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .stat-card:hover { border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.05); }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 10px;
+      font-size: 13.5px; font-weight: 500;
+      color: rgba(255,255,255,0.45);
+      cursor: pointer; transition: background 0.15s, color 0.15s;
+      text-decoration: none;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); }
+    .nav-item.active { background: rgba(124,58,237,0.18); color: #a78bfa; }
+
+    /* Admin badge */
+    .badge-admin {
+      background: rgba(124,58,237,0.2);
+      border: 1px solid rgba(124,58,237,0.4);
+      color: #a78bfa;
+    }
+    /* User badge */
+    .badge-user-role {
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.35);
+      color: #4ade80;
+    }
+
+    .badge-green { background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); color:#4ade80; }
+    .badge-purple { background:rgba(124,58,237,0.15); border:1px solid rgba(124,58,237,0.3); color:#a78bfa; }
+    .badge-orange { background:rgba(251,146,60,0.15); border:1px solid rgba(251,146,60,0.3); color:#fb923c; }
+    .badge-red { background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#f87171; }
+
+    .progress-bar { height:6px; background:rgba(255,255,255,0.06); border-radius:999px; overflow:hidden; }
+    .progress-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,#7c3aed,#a78bfa); }
+
+    .toggle { appearance:none; width:40px; height:22px; background:rgba(255,255,255,0.1); border-radius:999px; position:relative; cursor:pointer; transition:background 0.2s; }
+    .toggle:checked { background:#7c3aed; }
+    .toggle::after { content:''; position:absolute; width:16px; height:16px; background:#fff; border-radius:50%; top:3px; left:3px; transition:transform 0.2s; box-shadow:0 1px 4px rgba(0,0,0,0.4); }
+    .toggle:checked::after { transform:translateX(18px); }
+
+    .table-row { border-bottom:1px solid rgba(255,255,255,0.04); transition:background 0.15s; }
+    .table-row:hover { background:rgba(255,255,255,0.02); }
+    .table-row:last-child { border-bottom:none; }
+
+    .notif-dot { width:8px; height:8px; background:#7c3aed; border-radius:50%; box-shadow:0 0 6px #7c3aed; }
+
+    .chart-bar { background:linear-gradient(180deg,#7c3aed,rgba(124,58,237,0.3)); border-radius:4px 4px 0 0; transition:opacity 0.2s; }
+    .chart-bar:hover { opacity:0.8; }
+
+    #sidebar { transition:transform 0.25s ease; }
+    #overlay { display:none; }
+
+    @media (max-width: 768px) {
+      #sidebar { position:fixed; left:0; top:0; bottom:0; z-index:50; transform:translateX(-100%); }
+      #sidebar.open { transform:translateX(0); }
+      #overlay.active { display:block; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:40; }
+    }
+
+    /* Access denied state */
+    .access-denied { display:flex; flex-direction:column; align-items:center; justify-content:center; height:40vh; text-align:center; gap:12px; }
+
+    /* Filter tabs */
+    .filter-tab { color:rgba(255,255,255,0.4); }
+    .filter-tab.active { background:rgba(124,58,237,0.2); color:#a78bfa; }
+    .filter-tab:hover:not(.active) { background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.7); }
+  </style>
+</head>
+<body class="min-h-screen flex">
+
+  <div id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside id="sidebar" class="sidebar h-screen sticky top-0 flex flex-col overflow-y-auto">
+    <div class="p-5 border-b border-white/5">
+      <a href="index.html" class="flex items-center gap-2.5 group">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center"
+             style="box-shadow:0 0 14px rgba(124,58,237,0.35);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="font-bold text-base">Hızbot</span>
+      </a>
+    </div>
+
+    <!-- Role indicator -->
+    <div class="px-4 py-3 border-b border-white/5">
+      <div id="role-badge" class="badge-admin inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold">
+        <svg id="role-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span id="role-label">Admin</span>
+      </div>
+    </div>
+
+    <nav class="flex-1 px-3 py-4 space-y-0.5" id="nav-menu">
+      <!-- Nav items injected by JS based on role -->
+    </nav>
+
+    <!-- User info + logout -->
+    <div class="p-3 border-t border-white/5">
+      <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/4 transition-colors">
+        <div id="user-avatar" class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center text-xs font-bold flex-shrink-0">A</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold truncate" id="user-name">Admin</p>
+          <p class="text-xs text-white/35 truncate" id="user-email">-</p>
+        </div>
+        <button onclick="logout()" class="text-white/25 hover:text-red-400 transition-colors" title="Çıkış Yap">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+
+    <!-- Top bar -->
+    <header class="h-16 flex items-center gap-4 px-6 border-b border-white/5 sticky top-0 z-30"
+            style="background:rgba(6,6,8,0.9); backdrop-filter:blur(20px);">
+      <button class="md:hidden text-white/50 hover:text-white transition-colors" onclick="openSidebar()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="flex-1">
+        <h1 id="page-title" class="text-base font-bold">Dashboard</h1>
+        <p id="page-sub" class="text-xs text-white/35">Genel bakış</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative w-9 h-9 rounded-xl glass-card flex items-center justify-center text-white/50 hover:text-white transition-colors">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-dot absolute top-1.5 right-1.5"></span>
+        </button>
+        <button id="new-btn" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white"
+                style="background:#7c3aed; box-shadow:0 0 16px rgba(124,58,237,0.3);">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span id="new-btn-text">Yeni Otomasyon</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto p-6">
+
+      <!-- ===== DASHBOARD (SHARED) ===== -->
+      <div id="page-dashboard">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div class="stat-card rounded-2xl p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div class="w-9 h-9 rounded-xl bg-violet-500/15 border border-violet-500/20 flex items-center justify-center">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>
+              </div>
+              <span class="badge-green text-xs font-semibold px-2 py-0.5 rounded-full">+12%</span>
+            </div>
+            <p class="text-2xl font-black">1.248</p>
+            <p class="text-white/40 text-xs mt-1">Toplam Otomasyon</p>
+          </div>
+          <div class="stat-card rounded-2xl p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center border border-pink-500/25" style="background:rgba(236,72,153,0.15);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#ec4899" stroke="none"/></svg>
+              </div>
+              <span class="badge-green text-xs font-semibold px-2 py-0.5 rounded-full">+8%</span>
+            </div>
+            <p class="text-2xl font-black">3.540</p>
+            <p class="text-white/40 text-xs mt-1">Instagram DM</p>
+          </div>
+          <div class="stat-card rounded-2xl p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center border border-green-500/25" style="background:rgba(34,197,94,0.15);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="#22c55e"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+              </div>
+              <span class="badge-green text-xs font-semibold px-2 py-0.5 rounded-full">+24%</span>
+            </div>
+            <p class="text-2xl font-black">8.912</p>
+            <p class="text-white/40 text-xs mt-1">WhatsApp Mesaj</p>
+          </div>
+          <div class="stat-card rounded-2xl p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div class="w-9 h-9 rounded-xl bg-violet-500/15 border border-violet-500/20 flex items-center justify-center">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <span class="badge-green text-xs font-semibold px-2 py-0.5 rounded-full">+5%</span>
+            </div>
+            <p class="text-2xl font-black" id="user-count">1.047</p>
+            <p class="text-white/40 text-xs mt-1" id="user-count-label">Aktif Kullanıcı</p>
+          </div>
+        </div>
+
+        <!-- Chart + Progress -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
+          <div class="glass-card rounded-2xl p-6 lg:col-span-2">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h3 class="font-bold text-sm">Mesaj Trafiği</h3>
+                <p class="text-white/35 text-xs mt-0.5">Son 7 gün</p>
+              </div>
+              <div class="flex gap-3 text-xs">
+                <span class="flex items-center gap-1.5 text-white/40"><span class="w-2 h-2 rounded-full bg-violet-500 inline-block"></span>WhatsApp</span>
+                <span class="flex items-center gap-1.5 text-white/40"><span class="w-2 h-2 rounded-full bg-pink-500 inline-block"></span>Instagram</span>
+              </div>
+            </div>
+            <div class="flex items-end gap-3 h-32">
+              <div class="flex-1 flex flex-col items-center gap-1"><div class="w-full flex gap-1 items-end" style="height:100px"><div class="chart-bar flex-1" style="height:65%"></div><div class="flex-1 rounded-t" style="height:45%;background:linear-gradient(180deg,#ec4899,rgba(236,72,153,0.3));border-radius:4px 4px 0 0;"></div></div><span class="text-white/25 text-xs">Pzt</span></div>
+              <div class="flex-1 flex flex-col items-center gap-1"><div class="w-full flex gap-1 items-end" style="height:100px"><div class="chart-bar flex-1" style="height:80%"></div><div class="flex-1 rounded-t" style="height:60%;background:linear-gradient(180deg,#ec4899,rgba(236,72,153,0.3));border-radius:4px 4px 0 0;"></div></div><span class="text-white/25 text-xs">Sal</span></div>
+              <div class="flex-1 flex flex-col items-center gap-1"><div class="w-full flex gap-1 items-end" style="height:100px"><div class="chart-bar flex-1" style="height:55%"></div><div class="flex-1 rounded-t" style="height:35%;background:linear-gradient(180deg,#ec4899,rgba(236,72,153,0.3));border-radius:4px 4px 0 0;"></div></div><span class="text-white/25 text-xs">Çar</span></div>
+              <div class="flex-1 flex flex-col items-center gap-1"><div class="w-full flex gap-1 items-end" style="height:100px"><div class="chart-bar flex-1" style="height:95%"></div><div class="flex-1 rounded-t" style="height:75%;background:linear-gradient(180deg,#ec4899,rgba(236,72,153,0.3));border-radius:4px 4px 0 0;"></div></div><span class="text-white/25 text-xs">Per</span></div>
+              <div class="flex-1 flex flex-col items-center gap-1"><div class="w-full flex gap-1 items-end" style="height:100px"><div class="chart-bar flex-1" style="height:70%"></div><div class="flex-1 rounded-t" style="height:50%;background:linear-gradient(180deg,#ec4899,rgba(236,72,153,0.3));border-radius:4px 4px 0 0;"></div></div><span class="text-white/25 text-xs">Cum</span></div>
+              <div class="flex-1 flex flex-col items-center gap-1"><div class="w-full flex gap-1 items-end" style="height:100px"><div class="chart-bar flex-1" style="height:88%"></div><div class="flex-1 rounded-t" style="height:65%;background:linear-gradient(180deg,#ec4899,rgba(236,72,153,0.3));border-radius:4px 4px 0 0;"></div></div><span class="text-white/25 text-xs">Cmt</span></div>
+              <div class="flex-1 flex flex-col items-center gap-1"><div class="w-full flex gap-1 items-end" style="height:100px"><div class="chart-bar flex-1" style="height:60%"></div><div class="flex-1 rounded-t" style="height:40%;background:linear-gradient(180deg,#ec4899,rgba(236,72,153,0.3));border-radius:4px 4px 0 0;"></div></div><span class="text-white/25 text-xs">Paz</span></div>
+            </div>
+          </div>
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-bold text-sm mb-4">Aktif Otomasyonlar</h3>
+            <div class="space-y-4">
+              <div><div class="flex justify-between text-xs mb-1.5"><span class="text-white/50">Instagram DM Bot</span><span class="text-pink-400 font-semibold">87%</span></div><div class="progress-bar"><div class="progress-fill" style="width:87%;background:linear-gradient(90deg,#ec4899,#f472b6);"></div></div></div>
+              <div><div class="flex justify-between text-xs mb-1.5"><span class="text-white/50">WhatsApp Chatbot</span><span class="text-green-400 font-semibold">94%</span></div><div class="progress-bar"><div class="progress-fill" style="width:94%;background:linear-gradient(90deg,#22c55e,#4ade80);"></div></div></div>
+              <div><div class="flex justify-between text-xs mb-1.5"><span class="text-white/50">API Entegrasyonu</span><span class="text-violet-400 font-semibold">76%</span></div><div class="progress-bar"><div class="progress-fill" style="width:76%;"></div></div></div>
+              <div><div class="flex justify-between text-xs mb-1.5"><span class="text-white/50">Kampanya</span><span class="text-orange-400 font-semibold">62%</span></div><div class="progress-bar"><div class="progress-fill" style="width:62%;background:linear-gradient(90deg,#f97316,#fb923c);"></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Son mesajlar -->
+        <div class="glass-card rounded-2xl overflow-hidden">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-white/5">
+            <h3 class="font-bold text-sm">Son Mesajlar</h3>
+            <button class="text-xs text-violet-400 hover:text-violet-300 transition-colors" onclick="showPage('messages')">Tümünü Gör →</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead><tr class="border-b border-white/5">
+                <th class="text-left text-white/35 text-xs font-semibold px-6 py-3">Kullanıcı</th>
+                <th class="text-left text-white/35 text-xs font-semibold px-6 py-3">Kanal</th>
+                <th class="text-left text-white/35 text-xs font-semibold px-6 py-3">Mesaj</th>
+                <th class="text-left text-white/35 text-xs font-semibold px-6 py-3">Durum</th>
+                <th class="text-left text-white/35 text-xs font-semibold px-6 py-3">Zaman</th>
+              </tr></thead>
+              <tbody>
+                <tr class="table-row"><td class="px-6 py-3.5"><div class="flex items-center gap-2.5"><div class="w-7 h-7 rounded-full bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center text-xs font-bold">AK</div><span class="font-medium text-sm">Ahmet K.</span></div></td><td class="px-6 py-3.5"><span class="badge-purple text-xs px-2 py-0.5 rounded-full font-medium">Instagram</span></td><td class="px-6 py-3.5 text-white/50 text-xs max-w-[180px] truncate">Ürünleriniz hakkında bilgi almak istiyorum...</td><td class="px-6 py-3.5"><span class="badge-green text-xs px-2 py-0.5 rounded-full font-medium">Yanıtlandı</span></td><td class="px-6 py-3.5 text-white/35 text-xs">2 dk önce</td></tr>
+                <tr class="table-row"><td class="px-6 py-3.5"><div class="flex items-center gap-2.5"><div class="w-7 h-7 rounded-full bg-gradient-to-br from-pink-400 to-rose-600 flex items-center justify-center text-xs font-bold">SY</div><span class="font-medium text-sm">Selin Y.</span></div></td><td class="px-6 py-3.5"><span class="badge-green text-xs px-2 py-0.5 rounded-full font-medium">WhatsApp</span></td><td class="px-6 py-3.5 text-white/50 text-xs max-w-[180px] truncate">Sipariş durumumu öğrenebilir miyim?</td><td class="px-6 py-3.5"><span class="badge-green text-xs px-2 py-0.5 rounded-full font-medium">Yanıtlandı</span></td><td class="px-6 py-3.5 text-white/35 text-xs">5 dk önce</td></tr>
+                <tr class="table-row"><td class="px-6 py-3.5"><div class="flex items-center gap-2.5"><div class="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-cyan-600 flex items-center justify-center text-xs font-bold">MO</div><span class="font-medium text-sm">Mehmet O.</span></div></td><td class="px-6 py-3.5"><span class="badge-green text-xs px-2 py-0.5 rounded-full font-medium">WhatsApp</span></td><td class="px-6 py-3.5 text-white/50 text-xs max-w-[180px] truncate">Randevu almak istiyorum, uygun mu?</td><td class="px-6 py-3.5"><span class="badge-orange text-xs px-2 py-0.5 rounded-full font-medium">Bekliyor</span></td><td class="px-6 py-3.5 text-white/35 text-xs">12 dk önce</td></tr>
+                <tr class="table-row"><td class="px-6 py-3.5"><div class="flex items-center gap-2.5"><div class="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-xs font-bold">FD</div><span class="font-medium text-sm">Fatma D.</span></div></td><td class="px-6 py-3.5"><span class="badge-purple text-xs px-2 py-0.5 rounded-full font-medium">Instagram</span></td><td class="px-6 py-3.5 text-white/50 text-xs max-w-[180px] truncate">Story'nizi gördüm, fiyat ne kadar?</td><td class="px-6 py-3.5"><span class="badge-green text-xs px-2 py-0.5 rounded-full font-medium">Yanıtlandı</span></td><td class="px-6 py-3.5 text-white/35 text-xs">18 dk önce</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== AUTOMATIONS ===== -->
+      <div id="page-automations" class="hidden">
+        <div class="flex items-center justify-between mb-4">
+          <p class="text-white/40 text-sm">Otomasyonlarınızı Site Ayarları &gt; Otomasyon Yönetimi'nden ekleyebilirsiniz.</p>
+          <button onclick="_patchedShowPage('site-settings')" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white/70 hover:text-white transition-colors" style="background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Yeni Otomasyon Ekle
+          </button>
+        </div>
+        <div id="auto-cards" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+
+      <!-- ===== INSTAGRAM ===== -->
+      <div id="page-instagram" class="hidden">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="stat-card rounded-2xl p-4"><p class="text-xl font-black">3.540</p><p class="text-white/40 text-xs mt-1">Otomatik DM</p></div>
+          <div class="stat-card rounded-2xl p-4"><p class="text-xl font-black">892</p><p class="text-white/40 text-xs mt-1">Yorum Yanıtı</p></div>
+          <div class="stat-card rounded-2xl p-4"><p class="text-xl font-black">%91</p><p class="text-white/40 text-xs mt-1">Yanıt Oranı</p></div>
+          <div class="stat-card rounded-2xl p-4"><p class="text-xl font-black">+248</p><p class="text-white/40 text-xs mt-1">Yeni Takipçi</p></div>
+        </div>
+        <div class="glass-card rounded-2xl p-6">
+          <h3 class="font-bold text-sm mb-5">DM Otomasyon Kuralları</h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between p-4 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);"><div><p class="text-sm font-medium">Yeni Takipçi Karşılama</p><p class="text-xs text-white/35 mt-0.5">Takip edildiğinde 30 sn içinde mesaj gönder</p></div><input type="checkbox" class="toggle" checked /></div>
+            <div class="flex items-center justify-between p-4 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);"><div><p class="text-sm font-medium">Yorum Beğenme</p><p class="text-xs text-white/35 mt-0.5">Gelen yorumları otomatik beğen</p></div><input type="checkbox" class="toggle" checked /></div>
+            <div class="flex items-center justify-between p-4 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);"><div><p class="text-sm font-medium">Anahtar Kelime Yanıtı</p><p class="text-xs text-white/35 mt-0.5">"fiyat" yazdığında otomatik yanıt ver</p></div><input type="checkbox" class="toggle" checked /></div>
+            <div class="flex items-center justify-between p-4 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);"><div><p class="text-sm font-medium">Story Görüntüleme Yanıtı</p><p class="text-xs text-white/35 mt-0.5">Story izleyenlere teşekkür mesajı</p></div><input type="checkbox" class="toggle" /></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== WHATSAPP ===== -->
+      <div id="page-whatsapp" class="hidden">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="stat-card rounded-2xl p-4"><p class="text-xl font-black">8.912</p><p class="text-white/40 text-xs mt-1">Toplam Mesaj</p></div>
+          <div class="stat-card rounded-2xl p-4"><p class="text-xl font-black">342</p><p class="text-white/40 text-xs mt-1">Aktif Sohbet</p></div>
+          <div class="stat-card rounded-2xl p-4"><p class="text-xl font-black">%94</p><p class="text-white/40 text-xs mt-1">Yanıt Oranı</p></div>
+          <div class="stat-card rounded-2xl p-4"><p class="text-xl font-black">1.2s</p><p class="text-white/40 text-xs mt-1">Ort. Yanıt Süresi</p></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-bold text-sm mb-5">Chatbot Ayarları</h3>
+            <div class="space-y-4">
+              <div class="flex items-center justify-between"><div><p class="text-sm font-medium">7/24 Otomatik Yanıt</p><p class="text-xs text-white/35">Mesai dışı otomatik yanıt</p></div><input type="checkbox" class="toggle" checked /></div>
+              <div class="flex items-center justify-between"><div><p class="text-sm font-medium">Sipariş Bildirimi</p><p class="text-xs text-white/35">Sipariş durumu güncelleme</p></div><input type="checkbox" class="toggle" checked /></div>
+              <div class="flex items-center justify-between"><div><p class="text-sm font-medium">Randevu Hatırlatma</p><p class="text-xs text-white/35">1 gün önce hatırlatma</p></div><input type="checkbox" class="toggle" checked /></div>
+              <div class="flex items-center justify-between"><div><p class="text-sm font-medium">Toplu Kampanya</p><p class="text-xs text-white/35">Seçili kişilere mesaj</p></div><input type="checkbox" class="toggle" /></div>
+            </div>
+          </div>
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-bold text-sm mb-4">Son Sohbetler</h3>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/3 transition-colors cursor-pointer"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center text-xs font-bold flex-shrink-0">AK</div><div class="flex-1 min-w-0"><p class="text-sm font-medium">Ahmet K.</p><p class="text-xs text-white/35 truncate">Teşekkürler, çok yardımcı oldunuz!</p></div><span class="text-xs text-white/25">2 dk</span></div>
+              <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/3 transition-colors cursor-pointer"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-rose-600 flex items-center justify-center text-xs font-bold flex-shrink-0">SY</div><div class="flex-1 min-w-0"><p class="text-sm font-medium">Selin Y.</p><p class="text-xs text-white/35 truncate">Sipariş durumumu öğrenebilir miyim?</p></div><span class="text-xs text-white/25">5 dk</span></div>
+              <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/3 transition-colors cursor-pointer"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-xs font-bold flex-shrink-0">FD</div><div class="flex-1 min-w-0"><p class="text-sm font-medium">Fatma D.</p><p class="text-xs text-white/35 truncate">Randevu almak istiyorum</p></div><span class="text-xs text-white/25">12 dk</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== MESSAGES ===== -->
+      <div id="page-messages" class="hidden">
+        <div class="glass-card rounded-2xl overflow-hidden">
+          <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between">
+            <h3 class="font-bold text-sm">Tüm Mesajlar <span class="badge-purple text-xs px-2 py-0.5 rounded-full ml-2">12 yeni</span></h3>
+          </div>
+          <div class="divide-y divide-white/4">
+            <div class="table-row px-6 py-4 flex items-center gap-4"><div class="w-9 h-9 rounded-full bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center text-xs font-bold flex-shrink-0">AK</div><div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-0.5"><span class="font-semibold text-sm">Ahmet K.</span><span class="badge-purple text-xs px-1.5 py-0.5 rounded-full">Instagram</span></div><p class="text-xs text-white/45 truncate">Ürünleriniz hakkında bilgi almak istiyorum</p></div><div class="text-right flex-shrink-0"><p class="text-xs text-white/25">2 dk önce</p><span class="badge-green text-xs px-1.5 py-0.5 rounded-full mt-1 inline-block">Yanıtlandı</span></div></div>
+            <div class="table-row px-6 py-4 flex items-center gap-4"><div class="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-rose-600 flex items-center justify-center text-xs font-bold flex-shrink-0">SY</div><div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-0.5"><span class="font-semibold text-sm">Selin Y.</span><span class="badge-green text-xs px-1.5 py-0.5 rounded-full">WhatsApp</span></div><p class="text-xs text-white/45 truncate">Sipariş durumumu öğrenebilir miyim?</p></div><div class="text-right flex-shrink-0"><p class="text-xs text-white/25">5 dk önce</p><span class="badge-green text-xs px-1.5 py-0.5 rounded-full mt-1 inline-block">Yanıtlandı</span></div></div>
+            <div class="table-row px-6 py-4 flex items-center gap-4"><div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-cyan-600 flex items-center justify-center text-xs font-bold flex-shrink-0">MO</div><div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-0.5"><span class="font-semibold text-sm">Mehmet O.</span><span class="badge-green text-xs px-1.5 py-0.5 rounded-full">WhatsApp</span></div><p class="text-xs text-white/45 truncate">Randevu almak istiyorum</p></div><div class="text-right flex-shrink-0"><p class="text-xs text-white/25">12 dk önce</p><span class="badge-orange text-xs px-1.5 py-0.5 rounded-full mt-1 inline-block">Bekliyor</span></div></div>
+            <div class="table-row px-6 py-4 flex items-center gap-4"><div class="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-xs font-bold flex-shrink-0">FD</div><div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-0.5"><span class="font-semibold text-sm">Fatma D.</span><span class="badge-purple text-xs px-1.5 py-0.5 rounded-full">Instagram</span></div><p class="text-xs text-white/45 truncate">Story'nizi gördüm, fiyat ne kadar?</p></div><div class="text-right flex-shrink-0"><p class="text-xs text-white/25">18 dk önce</p><span class="badge-green text-xs px-1.5 py-0.5 rounded-full mt-1 inline-block">Yanıtlandı</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ANALYTICS (ADMIN ONLY) ===== -->
+      <div id="page-analytics" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-bold text-sm mb-4">Kanal Dağılımı</h3>
+            <div class="space-y-3">
+              <div><div class="flex justify-between text-xs mb-1"><span class="text-white/50">WhatsApp</span><span class="text-white/70">71%</span></div><div class="progress-bar"><div class="progress-fill" style="width:71%;background:linear-gradient(90deg,#22c55e,#4ade80);"></div></div></div>
+              <div><div class="flex justify-between text-xs mb-1"><span class="text-white/50">Instagram</span><span class="text-white/70">22%</span></div><div class="progress-bar"><div class="progress-fill" style="width:22%;background:linear-gradient(90deg,#ec4899,#f472b6);"></div></div></div>
+              <div><div class="flex justify-between text-xs mb-1"><span class="text-white/50">E-posta</span><span class="text-white/70">7%</span></div><div class="progress-bar"><div class="progress-fill" style="width:7%;background:linear-gradient(90deg,#f97316,#fb923c);"></div></div></div>
+            </div>
+          </div>
+          <div class="glass-card rounded-2xl p-6 md:col-span-2">
+            <h3 class="font-bold text-sm mb-2">Bu Ay</h3>
+            <div class="grid grid-cols-3 gap-4 mt-4">
+              <div><p class="text-2xl font-black">14.2K</p><p class="text-white/40 text-xs">Toplam Mesaj</p></div>
+              <div><p class="text-2xl font-black">%93</p><p class="text-white/40 text-xs">Yanıt Oranı</p></div>
+              <div><p class="text-2xl font-black">1.8s</p><p class="text-white/40 text-xs">Ort. Yanıt</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== USERS (ADMIN ONLY) ===== -->
+      <div id="page-users" class="hidden">
+
+        <!-- Özet kartlar -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+          <div class="stat-card rounded-2xl p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div class="w-9 h-9 rounded-xl bg-violet-500/15 border border-violet-500/20 flex items-center justify-center">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <span class="badge-purple text-xs font-semibold px-2 py-0.5 rounded-full">Toplam</span>
+            </div>
+            <p class="text-2xl font-black">6</p>
+            <p class="text-white/40 text-xs mt-1">Kayıtlı Kullanıcı</p>
+          </div>
+          <div class="stat-card rounded-2xl p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div class="w-9 h-9 rounded-xl bg-green-500/15 border border-green-500/20 flex items-center justify-center">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <span class="badge-green text-xs font-semibold px-2 py-0.5 rounded-full">+2 bu ay</span>
+            </div>
+            <p class="text-2xl font-black">4</p>
+            <p class="text-white/40 text-xs mt-1">Aktif Kullanıcı</p>
+          </div>
+          <div class="stat-card rounded-2xl p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div class="w-9 h-9 rounded-xl bg-violet-500/15 border border-violet-500/20 flex items-center justify-center">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+            </div>
+            <p class="text-2xl font-black">1</p>
+            <p class="text-white/40 text-xs mt-1">Admin Sayısı</p>
+          </div>
+          <div class="stat-card rounded-2xl p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div class="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/20 flex items-center justify-center">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <span class="badge-orange text-xs font-semibold px-2 py-0.5 rounded-full">Pasif</span>
+            </div>
+            <p class="text-2xl font-black">2</p>
+            <p class="text-white/40 text-xs mt-1">Pasif Kullanıcı</p>
+          </div>
+        </div>
+
+        <!-- Arama + Filtre + Ekle -->
+        <div class="flex flex-col sm:flex-row gap-3 mb-4">
+          <!-- Arama -->
+          <div class="relative flex-1">
+            <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </div>
+            <input id="user-search" type="text" placeholder="İsim veya e-posta ara..."
+                   oninput="filterUsers()"
+                   class="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm text-white outline-none"
+                   style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);" />
+          </div>
+          <!-- Filtre tabları -->
+          <div class="flex gap-1 p-1 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06);">
+            <button class="filter-tab active px-3 py-1.5 rounded-lg text-xs font-semibold transition-all" onclick="setFilter('all', this)">Tümü</button>
+            <button class="filter-tab px-3 py-1.5 rounded-lg text-xs font-semibold transition-all" onclick="setFilter('admin', this)">Admin</button>
+            <button class="filter-tab px-3 py-1.5 rounded-lg text-xs font-semibold transition-all" onclick="setFilter('user', this)">Kullanıcı</button>
+            <button class="filter-tab px-3 py-1.5 rounded-lg text-xs font-semibold transition-all" onclick="setFilter('pasif', this)">Pasif</button>
+          </div>
+          <!-- Ekle butonu -->
+          <button onclick="openAddModal()" class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold text-white whitespace-nowrap" style="background:#7c3aed; box-shadow:0 0 14px rgba(124,58,237,0.3);">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Kullanıcı Ekle
+          </button>
+        </div>
+
+        <!-- Kullanıcı Tablosu -->
+        <div class="glass-card rounded-2xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm" id="users-table">
+              <thead>
+                <tr class="border-b border-white/5">
+                  <th class="text-left text-white/35 text-xs font-semibold px-5 py-3">Kullanıcı</th>
+                  <th class="text-left text-white/35 text-xs font-semibold px-5 py-3">E-posta Kaydı</th>
+                  <th class="text-left text-white/35 text-xs font-semibold px-5 py-3">Rol / Plan</th>
+                  <th class="text-left text-white/35 text-xs font-semibold px-5 py-3">Durum</th>
+                  <th class="text-left text-white/35 text-xs font-semibold px-5 py-3">Son Giriş</th>
+                  <th class="text-left text-white/35 text-xs font-semibold px-5 py-3">Mesaj / Otomasyon</th>
+                  <th class="text-left text-white/35 text-xs font-semibold px-5 py-3">Kayıt Tarihi</th>
+                  <th class="text-left text-white/35 text-xs font-semibold px-5 py-3">İşlemler</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody">
+                <!-- JS ile doldurulacak -->
+              </tbody>
+            </table>
+          </div>
+          <div id="no-users" class="hidden py-12 text-center text-white/30 text-sm">Kullanıcı bulunamadı.</div>
+        </div>
+      </div>
+
+      <!-- ===== USER DETAIL MODAL ===== -->
+      <div id="user-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="relative z-10 w-full max-w-lg rounded-2xl p-6 max-h-[90vh] overflow-y-auto"
+             style="background:#0f0f14; border:1px solid rgba(255,255,255,0.1);">
+          <div class="flex items-start justify-between mb-6">
+            <h3 class="font-bold text-base">Kullanıcı Detayı</h3>
+            <button onclick="closeModal()" class="text-white/30 hover:text-white transition-colors">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <!-- Profil -->
+          <div class="flex items-center gap-4 mb-6 p-4 rounded-xl" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+            <div id="modal-avatar" class="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-black flex-shrink-0"></div>
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-base" id="modal-name">-</p>
+              <p class="text-white/45 text-sm" id="modal-email">-</p>
+              <div class="flex items-center gap-2 mt-1.5">
+                <span id="modal-role-badge" class="text-xs px-2 py-0.5 rounded-full font-semibold">-</span>
+                <span id="modal-status-badge" class="text-xs px-2 py-0.5 rounded-full font-semibold">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bilgi grid -->
+          <div class="grid grid-cols-2 gap-3 mb-5">
+            <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+              <p class="text-white/35 text-xs mb-1">Kayıt E-postası</p>
+              <p class="font-semibold text-sm" id="modal-reg-email">-</p>
+            </div>
+            <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+              <p class="text-white/35 text-xs mb-1">Kayıt Tarihi</p>
+              <p class="font-semibold text-sm" id="modal-reg-date">-</p>
+            </div>
+            <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+              <p class="text-white/35 text-xs mb-1">Son Giriş</p>
+              <p class="font-semibold text-sm" id="modal-last-login">-</p>
+            </div>
+            <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+              <p class="text-white/35 text-xs mb-1">Plan</p>
+              <p class="font-semibold text-sm" id="modal-plan">-</p>
+            </div>
+            <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+              <p class="text-white/35 text-xs mb-1">Toplam Mesaj</p>
+              <p class="font-semibold text-sm" id="modal-messages">-</p>
+            </div>
+            <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+              <p class="text-white/35 text-xs mb-1">Otomasyon Sayısı</p>
+              <p class="font-semibold text-sm" id="modal-automations">-</p>
+            </div>
+            <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+              <p class="text-white/35 text-xs mb-1">Instagram DM</p>
+              <p class="font-semibold text-sm" id="modal-ig">-</p>
+            </div>
+            <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+              <p class="text-white/35 text-xs mb-1">WhatsApp Mesaj</p>
+              <p class="font-semibold text-sm" id="modal-wa">-</p>
+            </div>
+          </div>
+
+          <!-- Şifre -->
+          <div class="rounded-xl p-3 mb-3" style="background:rgba(251,146,60,0.08); border:1px solid rgba(251,146,60,0.2);">
+            <div class="flex items-center justify-between mb-1">
+              <p class="text-orange-400/80 text-xs font-semibold">Şifre</p>
+              <button onclick="toggleModalPass()" class="text-white/30 hover:text-white/70 transition-colors" title="Göster/Gizle">
+                <svg id="modal-pass-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="modal-pass" class="font-mono text-sm font-bold text-white tracking-widest">••••••••</span>
+              <button onclick="copyModalPass()" class="text-white/30 hover:text-violet-400 transition-colors ml-auto" title="Kopyala">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- IP + cihaz -->
+          <div class="rounded-xl p-3 mb-5" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+            <p class="text-white/35 text-xs mb-2">Bağlantı Bilgileri</p>
+            <div class="flex flex-wrap gap-4 text-sm">
+              <div><span class="text-white/35 text-xs">IP: </span><span id="modal-ip" class="font-mono text-xs">-</span></div>
+              <div><span class="text-white/35 text-xs">Cihaz: </span><span id="modal-device" class="text-xs">-</span></div>
+              <div><span class="text-white/35 text-xs">Tarayıcı: </span><span id="modal-browser" class="text-xs">-</span></div>
+            </div>
+          </div>
+
+          <!-- Aksiyon butonları -->
+          <div class="flex gap-2 mb-2">
+            <button id="modal-toggle-status" onclick="toggleUserStatus()" class="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white transition-colors" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1);">Durumu Değiştir</button>
+            <button id="modal-toggle-role"   onclick="toggleUserRole()"   class="flex-1 py-2.5 rounded-xl text-xs font-semibold transition-colors" style="background:rgba(124,58,237,0.2); border:1px solid rgba(124,58,237,0.4); color:#a78bfa;">Rol Değiştir</button>
+            <button onclick="deleteUser()" class="py-2.5 px-4 rounded-xl text-xs font-semibold transition-colors" style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); color:#f87171;">Sil</button>
+          </div>
+          <button onclick="resetUserPassword(activeUserId)" class="w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors" style="background:rgba(251,146,60,0.15); border:1px solid rgba(251,146,60,0.3); color:#fb923c;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Şifreyi Sıfırla &amp; Gmail'e Gönder
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== ADD USER MODAL ===== -->
+      <div id="add-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeAddModal()"></div>
+        <div class="relative z-10 w-full max-w-md rounded-2xl p-6" style="background:#0f0f14; border:1px solid rgba(255,255,255,0.1);">
+          <div class="flex items-center justify-between mb-5">
+            <h3 class="font-bold text-base">Yeni Kullanıcı Ekle</h3>
+            <button onclick="closeAddModal()" class="text-white/30 hover:text-white transition-colors">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs text-white/40 mb-1.5">Ad Soyad</label>
+              <input id="add-name" type="text" placeholder="Ahmet Yılmaz" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);" />
+            </div>
+            <div>
+              <label class="block text-xs text-white/40 mb-1.5">E-posta (Kayıt)</label>
+              <input id="add-email" type="email" placeholder="ahmet@ornek.com" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);" />
+            </div>
+            <div>
+              <label class="block text-xs text-white/40 mb-1.5">Rol</label>
+              <select id="add-role" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none appearance-none" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);">
+                <option value="user" style="background:#0f0f14">Kullanıcı</option>
+                <option value="admin" style="background:#0f0f14">Admin</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-white/40 mb-1.5">Plan</label>
+              <select id="add-plan" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none appearance-none" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);">
+                <option value="Ücretsiz" style="background:#0f0f14">Ücretsiz</option>
+                <option value="Profesyonel" style="background:#0f0f14">Profesyonel</option>
+                <option value="İş" style="background:#0f0f14">İş</option>
+              </select>
+            </div>
+            <button onclick="addUser()" class="w-full py-3 rounded-xl text-sm font-semibold text-white mt-2" style="background:#7c3aed;">Kullanıcı Ekle</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SITE SETTINGS (ADMIN ONLY) ===== -->
+      <div id="page-site-settings" class="hidden">
+        <div class="space-y-5 max-w-4xl">
+
+          <!-- Genel Ayarlar -->
+          <div class="glass-card rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-9 h-9 rounded-xl bg-violet-500/15 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm">Genel Ayarlar</h3>
+                <p class="text-white/35 text-xs">Site adı, slogan ve dil ayarları</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">Site Adı</label>
+                <input id="ss-site-name" type="text" value="Hızbot" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+              </div>
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">Slogan</label>
+                <input id="ss-slogan" type="text" value="AI Workflows ile İşlerinizi Otomatize Edin" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+              </div>
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">Site URL</label>
+                <input id="ss-url" type="text" value="https://turanai.com.tr" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+              </div>
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">Dil</label>
+                <select id="ss-lang" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none appearance-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);">
+                  <option value="tr" selected style="background:#0f0f14">Türkçe</option>
+                  <option value="en" style="background:#0f0f14">English</option>
+                </select>
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-xs text-white/40 mb-1.5">Site Açıklaması</label>
+                <textarea id="ss-desc" rows="2" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none resize-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">Favori uygulamalarınızı bağlayın, tetikleyiciler ayarlayın ve geri kalanı AI'ya bırakın.</textarea>
+              </div>
+            </div>
+            <div class="mt-4 flex items-center gap-3 flex-wrap">
+              <button onclick="saveSiteSettings('general')" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all" style="background:#7c3aed;">Kaydet</button>
+              <span class="text-xs text-white/25 flex items-center gap-1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Anasayfa başlık &amp; meta etiketleri günceller</span>
+            </div>
+          </div>
+
+          <!-- İletişim Bilgileri -->
+          <div class="glass-card rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-9 h-9 rounded-xl border flex items-center justify-center flex-shrink-0" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.3);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="#22c55e"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm">İletişim Bilgileri</h3>
+                <p class="text-white/35 text-xs">WhatsApp, e-posta ve adres bilgileri</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">WhatsApp Numarası</label>
+                <div class="relative">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30 text-xs font-mono">+</span>
+                  <input id="ss-whatsapp" type="text" value="905443873239" class="w-full pl-7 pr-4 py-3 rounded-xl text-sm text-white outline-none font-mono transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">E-posta Adresi</label>
+                <input id="ss-email" type="email" value="hello@hizbot.com" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+              </div>
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">Destek E-postası</label>
+                <input id="ss-support-email" type="email" value="destek@hizbot.com" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+              </div>
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">Telefon</label>
+                <input id="ss-phone" type="text" value="+90 544 387 32 39" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none font-mono transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-xs text-white/40 mb-1.5">Adres</label>
+                <input id="ss-address" type="text" placeholder="Şehir, Ülke" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+              </div>
+            </div>
+            <div class="mt-4 flex items-center gap-3 flex-wrap">
+              <button onclick="saveSiteSettings('contact')" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all" style="background:#7c3aed;">Kaydet</button>
+              <span class="text-xs text-white/25 flex items-center gap-1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Anasayfa footer &amp; tüm WhatsApp linkleri günceller</span>
+            </div>
+          </div>
+
+          <!-- Sosyal Medya -->
+          <div class="glass-card rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-9 h-9 rounded-xl border flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,rgba(236,72,153,0.2),rgba(251,146,60,0.15));border-color:rgba(236,72,153,0.3);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#ec4899" stroke="none"/></svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm">Sosyal Medya</h3>
+                <p class="text-white/35 text-xs">Hesap linkleri ve profil adresleri</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">Instagram</label>
+                <div class="relative">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/25 text-xs">instagram.com/</span>
+                  <input id="ss-instagram" type="text" placeholder="kullaniciadi" class="w-full pl-[110px] pr-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">Facebook</label>
+                <div class="relative">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/25 text-xs">facebook.com/</span>
+                  <input id="ss-facebook" type="text" placeholder="sayfaadi" class="w-full pl-[104px] pr-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">TikTok</label>
+                <div class="relative">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/25 text-xs">tiktok.com/@</span>
+                  <input id="ss-tiktok" type="text" placeholder="kullaniciadi" class="w-full pl-[104px] pr-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">LinkedIn</label>
+                <div class="relative">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/25 text-xs">linkedin.com/in/</span>
+                  <input id="ss-linkedin" type="text" placeholder="profil" class="w-full pl-[120px] pr-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 flex items-center gap-3 flex-wrap">
+              <button onclick="saveSiteSettings('social')" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all" style="background:#7c3aed;">Kaydet</button>
+              <span class="text-xs text-white/25 flex items-center gap-1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Anasayfa footer sosyal medya linkleri günceller</span>
+            </div>
+          </div>
+
+          <!-- Fiyatlandırma -->
+          <div class="glass-card rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-9 h-9 rounded-xl bg-violet-500/15 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm">Fiyatlandırma</h3>
+                <p class="text-white/35 text-xs">Plan fiyatlarını ve özelliklerini ayarlayın</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Ücretsiz Plan -->
+              <div class="rounded-xl p-4 space-y-3" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);">
+                <p class="text-xs font-semibold text-white/60 uppercase tracking-wider">Ücretsiz Plan</p>
+                <div>
+                  <label class="block text-xs text-white/30 mb-1">Aylık Fiyat (₺)</label>
+                  <input id="ss-price-free" type="number" value="0" class="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none font-mono transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/30 mb-1">Eski Fiyat (₺) — üstü çizgili <span class="text-white/20">(boş = gösterme)</span></label>
+                  <input id="ss-price-free-old" type="number" placeholder="örn: 99" class="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none font-mono transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/30 mb-1">İş Akışı Limiti</label>
+                  <input id="ss-limit-free" type="number" value="5" class="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/30 mb-1">Aylık Görev Limiti</label>
+                  <input id="ss-tasks-free" type="number" value="1000" class="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+              </div>
+              <!-- Pro Plan -->
+              <div class="rounded-xl p-4 space-y-3" style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.3);">
+                <p class="text-xs font-semibold text-violet-400 uppercase tracking-wider">Profesyonel Plan</p>
+                <div>
+                  <label class="block text-xs text-white/30 mb-1">Aylık Fiyat (₺)</label>
+                  <input id="ss-price-pro" type="number" value="499" class="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none font-mono transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/30 mb-1">Eski Fiyat (₺) — üstü çizgili <span class="text-white/20">(boş = gösterme)</span></label>
+                  <input id="ss-price-pro-old" type="number" placeholder="örn: 699" class="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none font-mono transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/30 mb-1">İş Akışı Limiti</label>
+                  <input id="ss-limit-pro" type="number" value="50" class="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/30 mb-1">Aylık Görev Limiti</label>
+                  <input id="ss-tasks-pro" type="number" value="25000" class="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+              </div>
+              <!-- İş Plan -->
+              <div class="rounded-xl p-4 space-y-3" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);">
+                <p class="text-xs font-semibold text-white/60 uppercase tracking-wider">İş Planı</p>
+                <div>
+                  <label class="block text-xs text-white/30 mb-1">Aylık Fiyat (₺)</label>
+                  <input id="ss-price-biz" type="number" value="999" class="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none font-mono transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/30 mb-1">Eski Fiyat (₺) — üstü çizgili <span class="text-white/20">(boş = gösterme)</span></label>
+                  <input id="ss-price-biz-old" type="number" value="1099" class="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none font-mono transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/30 mb-1">Görev Limiti</label>
+                  <input id="ss-limit-biz" type="number" value="500000" class="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 flex items-center gap-3 flex-wrap">
+              <button onclick="saveSiteSettings('pricing')" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all" style="background:#7c3aed;">Kaydet</button>
+              <span class="text-xs text-white/25 flex items-center gap-1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Anasayfa fiyatlandırma bölümü günceller</span>
+            </div>
+          </div>
+
+          <!-- SEO & Meta -->
+          <div class="glass-card rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm">SEO & Meta Etiketler</h3>
+                <p class="text-white/35 text-xs">Arama motoru optimizasyonu</p>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">Sayfa Başlığı (Title)</label>
+                <input id="ss-seo-title" type="text" value="Hızbot — AI Workflows ile İşlerinizi Otomatize Edin" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+                <p class="text-white/25 text-xs mt-1" id="ss-title-count">0/60 karakter</p>
+              </div>
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">Meta Açıklama (Description)</label>
+                <textarea id="ss-seo-desc" rows="2" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none resize-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">Favori uygulamalarınızı bağlayın, tetikleyiciler ayarlayın ve geri kalanı AI'ya bırakın — kod yazmanıza gerek yok.</textarea>
+                <p class="text-white/25 text-xs mt-1" id="ss-desc-count">0/160 karakter</p>
+              </div>
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">Anahtar Kelimeler</label>
+                <input id="ss-keywords" type="text" value="AI otomasyon, WhatsApp bot, Instagram otomasyon, chatbot" placeholder="kelime1, kelime2, kelime3" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" onfocus="this.style.borderColor='rgba(124,58,237,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+              </div>
+            </div>
+            <div class="mt-4 flex items-center gap-3 flex-wrap">
+              <button onclick="saveSiteSettings('seo')" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all" style="background:#7c3aed;">Kaydet</button>
+              <span class="text-xs text-white/25 flex items-center gap-1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Anasayfa title &amp; meta description günceller</span>
+            </div>
+          </div>
+
+          <!-- Güvenlik -->
+          <div class="glass-card rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/20 flex items-center justify-center flex-shrink-0">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm">Güvenlik</h3>
+                <p class="text-white/35 text-xs">Admin şifre yönetimi ve erişim kontrolü</p>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div id="sec-success" class="hidden px-4 py-3 rounded-xl text-sm" style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);color:#4ade80;">
+                Şifre başarıyla güncellendi.
+              </div>
+              <div id="sec-error" class="hidden px-4 py-3 rounded-xl text-sm" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;"></div>
+              <div>
+                <label class="block text-xs text-white/40 mb-1.5">Mevcut Şifre</label>
+                <input id="ss-cur-pass" type="password" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" />
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs text-white/40 mb-1.5">Yeni Şifre</label>
+                  <input id="ss-new-pass" type="password" placeholder="En az 6 karakter" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/40 mb-1.5">Yeni Şifre (Tekrar)</label>
+                  <input id="ss-new-pass2" type="password" placeholder="Şifreyi tekrar girin" class="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-colors" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+              </div>
+              <button onclick="changeAdminPassword()" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all" style="background:#f97316;">Şifreyi Güncelle</button>
+            </div>
+            <!-- Kullanıcı Şifre Yönetimi -->
+            <div class="border-t border-white/5 mt-5 pt-5">
+              <p class="text-xs text-white/40 font-semibold uppercase tracking-wider mb-3">Kullanıcı Şifre Yönetimi</p>
+              <p class="text-xs text-white/30 mb-4">Seçili kullanıcı için yeni şifre oluşturup otomatik olarak Gmail üzerinden gönderin.</p>
+
+              <div class="space-y-2 mb-3" id="pw-user-list">
+                <!-- JS ile doldurulacak -->
+              </div>
+
+              <div id="pw-sent-ok" class="hidden px-3 py-2.5 rounded-xl text-xs flex items-center gap-2 mt-2" style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);color:#4ade80;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span id="pw-sent-msg">Gmail açıldı. Mesajı gönderdikten sonra şifre kaydedilecek.</span>
+              </div>
+            </div>
+
+            <div class="border-t border-white/5 mt-5 pt-5 space-y-3">
+              <p class="text-xs text-white/40 font-semibold uppercase tracking-wider mb-3">Oturum & Erişim</p>
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-medium">Tüm Oturumları Sonlandır</p>
+                  <p class="text-xs text-white/35">Diğer cihazlardaki oturumları kapat</p>
+                </div>
+                <button onclick="logoutAll()" class="px-4 py-2 rounded-lg text-xs font-semibold transition-colors" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#f87171;">Sonlandır</button>
+              </div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-medium">Kayıt Olmayı Kapat</p>
+                  <p class="text-xs text-white/35">Yeni kullanıcı kaydını devre dışı bırak</p>
+                </div>
+                <input type="checkbox" class="toggle" id="ss-disable-register" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Otomasyon Yönetimi -->
+          <div class="glass-card rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-5">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-violet-500/15 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm">Otomasyon Yönetimi</h3>
+                  <p class="text-white/35 text-xs">Ana panel Otomasyonlar sayfasına kart ekle / kaldır</p>
+                </div>
+              </div>
+              <button onclick="openAddAutomation()" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white transition-colors" style="background:#7c3aed;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Yeni Ekle
+              </button>
+            </div>
+
+            <!-- Otomasyon listesi -->
+            <div id="auto-list" class="space-y-2 mb-4"></div>
+
+            <!-- Yeni otomasyon formu (gizli) -->
+            <div id="auto-add-form" class="hidden rounded-xl p-4 space-y-3 mt-2" style="background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.2);">
+              <p class="text-xs font-semibold text-violet-400 uppercase tracking-wider">Yeni Otomasyon</p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs text-white/40 mb-1">İsim</label>
+                  <input id="auto-new-name" type="text" placeholder="WhatsApp Karşılama Botu" class="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+                <div>
+                  <label class="block text-xs text-white/40 mb-1">Platform</label>
+                  <select id="auto-new-platform" class="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none appearance-none" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);">
+                    <option value="whatsapp" style="background:#0f0f14">WhatsApp</option>
+                    <option value="instagram" style="background:#0f0f14">Instagram</option>
+                    <option value="email" style="background:#0f0f14">E-posta</option>
+                    <option value="custom" style="background:#0f0f14">Özel</option>
+                  </select>
+                </div>
+                <div class="md:col-span-2">
+                  <label class="block text-xs text-white/40 mb-1">Açıklama</label>
+                  <input id="auto-new-desc" type="text" placeholder="7/24 otomatik müşteri yanıtı" class="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);" />
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="saveNewAutomation()" class="px-4 py-2 rounded-lg text-xs font-semibold text-white" style="background:#7c3aed;">Kaydet</button>
+                <button onclick="document.getElementById('auto-add-form').classList.add('hidden')" class="px-4 py-2 rounded-lg text-xs font-semibold text-white/50 hover:text-white transition-colors" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">İptal</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kullanıcı İzinleri -->
+          <div class="glass-card rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm">Kullanıcı İzinleri</h3>
+                <p class="text-white/35 text-xs">Üyelerin hangi özelliklere erişebileceğini belirle</p>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between p-3.5 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);">
+                <div><p class="text-sm font-medium">WhatsApp Otomasyonu</p><p class="text-xs text-white/35">Kullanıcılar WhatsApp botu kurabilir</p></div>
+                <input type="checkbox" class="toggle" id="perm-whatsapp" checked />
+              </div>
+              <div class="flex items-center justify-between p-3.5 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);">
+                <div><p class="text-sm font-medium">Instagram Otomasyonu</p><p class="text-xs text-white/35">Kullanıcılar Instagram DM botu kurabilir</p></div>
+                <input type="checkbox" class="toggle" id="perm-instagram" checked />
+              </div>
+              <div class="flex items-center justify-between p-3.5 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);">
+                <div><p class="text-sm font-medium">Kampanya Gönderimi</p><p class="text-xs text-white/35">Kullanıcılar toplu mesaj kampanyası başlatabilir</p></div>
+                <input type="checkbox" class="toggle" id="perm-campaign" checked />
+              </div>
+              <div class="flex items-center justify-between p-3.5 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);">
+                <div><p class="text-sm font-medium">Analitik Görüntüleme</p><p class="text-xs text-white/35">Kullanıcılar kendi istatistiklerini görebilir</p></div>
+                <input type="checkbox" class="toggle" id="perm-analytics" checked />
+              </div>
+              <div class="flex items-center justify-between p-3.5 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);">
+                <div><p class="text-sm font-medium">API Erişimi</p><p class="text-xs text-white/35">Üçüncü parti API entegrasyonuna izin ver</p></div>
+                <input type="checkbox" class="toggle" id="perm-api" />
+              </div>
+              <div class="flex items-center justify-between p-3.5 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);">
+                <div><p class="text-sm font-medium">Plan Yükseltme</p><p class="text-xs text-white/35">Kullanıcılar kendi planlarını yükseltebilir</p></div>
+                <input type="checkbox" class="toggle" id="perm-upgrade" checked />
+              </div>
+            </div>
+            <button onclick="savePermissions()" class="mt-4 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all" style="background:#7c3aed;">İzinleri Kaydet</button>
+          </div>
+
+          <!-- Sistem & Bakım -->
+          <div class="glass-card rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-9 h-9 rounded-xl bg-red-500/15 border border-red-500/20 flex items-center justify-center flex-shrink-0">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm">Sistem & Bakım</h3>
+                <p class="text-white/35 text-xs">Bakım modu, önbellek ve veri işlemleri</p>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-4 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);">
+                <div>
+                  <p class="text-sm font-medium">Bakım Modu</p>
+                  <p class="text-xs text-white/35">Site ziyaretçilere bakım sayfası gösterir</p>
+                </div>
+                <input type="checkbox" class="toggle" id="ss-maintenance" />
+              </div>
+              <div class="flex items-center justify-between p-4 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);">
+                <div>
+                  <p class="text-sm font-medium">Demo Hesapları Göster</p>
+                  <p class="text-xs text-white/35">Giriş sayfasında demo hesap bilgilerini görüntüle (<code class="text-violet-400 text-xs">?dev=1</code>)</p>
+                </div>
+                <a href="login.html?dev=1" target="_blank" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-violet-300 transition-colors" style="background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);">Aç →</a>
+              </div>
+              <div class="flex items-center justify-between p-4 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);">
+                <div>
+                  <p class="text-sm font-medium">Kullanıcı Verilerini Temizle</p>
+                  <p class="text-xs text-white/35">localStorage'daki tüm kullanıcı kayıtlarını sil</p>
+                </div>
+                <button onclick="clearUserData()" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;">Temizle</button>
+              </div>
+              <div class="flex items-center justify-between p-4 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);">
+                <div>
+                  <p class="text-sm font-medium">Site Ayarlarını Sıfırla</p>
+                  <p class="text-xs text-white/35">Tüm ayarları varsayılan değerlere döndür</p>
+                </div>
+                <button onclick="resetSiteSettings()" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;">Sıfırla</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kayıt/Bildirim toastu -->
+          <div id="settings-toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-xl text-sm font-semibold text-white shadow-lg" style="background:rgba(124,58,237,0.9);backdrop-filter:blur(10px);border:1px solid rgba(167,139,250,0.4);">
+            Ayarlar kaydedildi
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ===== SETTINGS ===== -->
+      <div id="page-settings" class="hidden">
+        <div class="max-w-2xl space-y-4">
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-bold text-sm mb-5">Hesap Bilgileri</h3>
+            <div class="space-y-4">
+              <div><label class="block text-xs text-white/40 mb-1.5">Ad Soyad</label><input type="text" id="settings-name" class="w-full bg-white/4 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-violet-500/60 transition-colors" /></div>
+              <div><label class="block text-xs text-white/40 mb-1.5">E-posta</label><input type="email" id="settings-email" class="w-full bg-white/4 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-violet-500/60 transition-colors" /></div>
+              <div><label class="block text-xs text-white/40 mb-1.5">Rol</label><input type="text" id="settings-role" readonly class="w-full bg-white/3 border border-white/6 rounded-xl px-4 py-3 text-sm text-white/50 outline-none cursor-not-allowed" /></div>
+              <button class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white" style="background:#7c3aed;">Kaydet</button>
+            </div>
+          </div>
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-bold text-sm mb-5">Bildirimler</h3>
+            <div class="space-y-4">
+              <div class="flex items-center justify-between"><div><p class="text-sm font-medium">E-posta Bildirimleri</p><p class="text-xs text-white/35">Yeni mesajda e-posta al</p></div><input type="checkbox" class="toggle" checked /></div>
+              <div class="flex items-center justify-between"><div><p class="text-sm font-medium">Günlük Rapor</p><p class="text-xs text-white/35">Her sabah özet raporu al</p></div><input type="checkbox" class="toggle" checked /></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // ── Auth guard ──
+    const raw = localStorage.getItem('hizbot_session') || sessionStorage.getItem('hizbot_session');
+    if (!raw) { window.location.href = 'login.html'; }
+
+    const session = JSON.parse(raw);
+    const isAdmin = session.role === 'admin';
+
+    // ── Nav definitions ──
+    const NAV_COMMON = [
+      { id: 'dashboard',   label: 'Dashboard',   icon: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>' },
+      { id: 'automations', label: 'Otomasyonlar', icon: '<polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>' },
+      { id: 'instagram',   label: 'Instagram',   icon: '<rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>' },
+      { id: 'whatsapp',    label: 'WhatsApp',    icon: null, waIcon: true },
+      { id: 'messages',    label: 'Mesajlar',    icon: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>', badge: '12' },
+    ];
+    const NAV_ADMIN_EXTRA = [
+      { id: 'analytics',     label: 'Analitik',      icon: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>' },
+      { id: 'users',         label: 'Kullanıcılar',  icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>' },
+      { id: 'site-settings', label: 'Site Ayarları', icon: '<circle cx="12" cy="12" r="1"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>' },
+    ];
+    const NAV_SETTINGS = [
+      { id: 'settings', label: 'Ayarlar', icon: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>' },
+    ];
+
+    const WA_SVG = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>';
+
+    function buildNav() {
+      const menu = document.getElementById('nav-menu');
+      const items = [...NAV_COMMON, ...(isAdmin ? NAV_ADMIN_EXTRA : []), ...NAV_SETTINGS];
+
+      // Section label for admin extras
+      let html = `<p class="text-white/20 text-xs font-semibold uppercase tracking-wider px-3 mb-2 pt-1">Genel</p>`;
+      NAV_COMMON.forEach(item => { html += navItemHTML(item); });
+
+      if (isAdmin) {
+        html += `<div class="pt-3 pb-1"><p class="text-white/20 text-xs font-semibold uppercase tracking-wider px-3 mb-1">Yönetim</p></div>`;
+        NAV_ADMIN_EXTRA.forEach(item => { html += navItemHTML(item); });
+      }
+
+      html += `<div class="pt-3 pb-1"><p class="text-white/20 text-xs font-semibold uppercase tracking-wider px-3 mb-1">Hesap</p></div>`;
+      NAV_SETTINGS.forEach(item => { html += navItemHTML(item); });
+
+      menu.innerHTML = html;
+    }
+
+    function navItemHTML(item) {
+      const iconSVG = item.waIcon
+        ? WA_SVG
+        : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${item.icon}</svg>`;
+      const badge = item.badge ? `<span class="ml-auto text-xs bg-violet-600/60 text-violet-200 px-1.5 py-0.5 rounded-full">${item.badge}</span>` : '';
+      return `<a class="nav-item" id="nav-${item.id}" onclick="showPage('${item.id}')">${iconSVG}${item.label}${badge}</a>`;
+    }
+
+    // ── Page meta ──
+    const PAGE_META = {
+      dashboard:   { title: 'Dashboard', sub: 'Genel bakış ve özet istatistikler' },
+      automations: { title: 'Otomasyonlar', sub: 'Tüm otomasyon kurallarını yönetin' },
+      instagram:   { title: 'Instagram', sub: 'DM ve yorum otomasyonları' },
+      whatsapp:    { title: 'WhatsApp', sub: 'Chatbot ve mesaj otomasyonları' },
+      messages:    { title: 'Mesajlar', sub: 'Gelen mesajların listesi' },
+      analytics:      { title: 'Analitik', sub: 'Performans ve istatistikler (Admin)' },
+      users:          { title: 'Kullanıcılar', sub: 'Kayıtlı kullanıcıları yönet (Admin)' },
+      'site-settings':{ title: 'Site Ayarları', sub: 'Site genelindeki tüm ayarları yönet (Admin)' },
+      settings:       { title: 'Ayarlar', sub: 'Hesap ve sistem ayarları' },
+    };
+
+    // ── Admin-only pages ──
+    const ADMIN_ONLY = ['analytics', 'users', 'site-settings'];
+
+    function showPage(id) {
+      if (ADMIN_ONLY.includes(id) && !isAdmin) return; // guard
+
+      document.querySelectorAll('[id^="page-"]').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+      const pg = document.getElementById('page-' + id);
+      if (pg) pg.classList.remove('hidden');
+
+      const meta = PAGE_META[id] || {};
+      document.getElementById('page-title').textContent = meta.title || id;
+      document.getElementById('page-sub').textContent   = meta.sub || '';
+
+      const navEl = document.getElementById('nav-' + id);
+      if (navEl) navEl.classList.add('active');
+
+      closeSidebar();
+    }
+
+    function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('overlay').classList.add('active'); }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('active'); }
+
+    function logout() {
+      localStorage.removeItem('hizbot_session');
+      sessionStorage.removeItem('hizbot_session');
+      window.location.href = 'login.html';
+    }
+
+    // ── Init ──
+    buildNav();
+
+    // Role badge
+    const badge = document.getElementById('role-badge');
+    const roleIcon = document.getElementById('role-icon');
+    const roleLabel = document.getElementById('role-label');
+    if (isAdmin) {
+      badge.className = 'badge-admin inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold';
+      roleIcon.innerHTML = '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>';
+      roleLabel.textContent = 'Admin';
+    } else {
+      badge.className = 'badge-user-role inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold';
+      roleIcon.innerHTML = '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>';
+      roleLabel.textContent = 'Kullanıcı';
+    }
+
+    // User info
+    document.getElementById('user-name').textContent   = session.name || '-';
+    document.getElementById('user-email').textContent  = session.email || '-';
+    document.getElementById('user-avatar').textContent = (session.name || 'U')[0].toUpperCase();
+
+    // Settings prefill
+    document.getElementById('settings-name').value  = session.name || '';
+    document.getElementById('settings-email').value = session.email || '';
+    document.getElementById('settings-role').value  = isAdmin ? 'Admin' : 'Kullanıcı';
+
+    // Dashboard tweaks per role
+    if (!isAdmin) {
+      document.getElementById('user-count').textContent       = 'Benim';
+      document.getElementById('user-count-label').textContent = 'Otomasyonlarım';
+      document.getElementById('new-btn-text').textContent     = 'Yeni Otomasyon';
+    }
+
+    // Show dashboard by default
+    showPage('dashboard');
+    // Pre-render automations for when user navigates there
+    setTimeout(renderAutomationCards, 50);
+
+    // ══════════════════════════════════════════
+    //  USERS MANAGEMENT
+    // ══════════════════════════════════════════
+
+    function esc(s) {
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    // Load users from localStorage (persist across sessions)
+    function getUsers() {
+      const stored = localStorage.getItem('hizbot_users');
+      if (stored) return JSON.parse(stored);
+      // Default seed data
+      return [
+        { id:1, name:'Admin',          email:'admin@hizbot.com',      role:'admin', plan:'İş',          status:'aktif', regDate:'01.01.2025', lastLogin:'Az önce',    messages:14200, automations:48, ig:3540, wa:8912, ip:'192.168.1.1',   device:'Masaüstü', browser:'Chrome 124' },
+        { id:2, name:'Kullanıcı',      email:'kullanici@hizbot.com',  role:'user',  plan:'Profesyonel', status:'aktif', regDate:'15.03.2025', lastLogin:'2 saat önce',messages:3480,  automations:12, ig:890,  wa:2100, ip:'10.0.0.42',    device:'Mobil',    browser:'Safari 17'  },
+        { id:3, name:'Ahmet Yılmaz',   email:'ahmet@ornek.com',       role:'user',  plan:'Ücretsiz',    status:'aktif', regDate:'02.04.2025', lastLogin:'Dün',        messages:540,   automations:3,  ig:120,  wa:380,  ip:'85.34.12.201', device:'Tablet',   browser:'Firefox 125'},
+        { id:4, name:'Selin Arslan',   email:'selin@firma.com',       role:'user',  plan:'Profesyonel', status:'aktif', regDate:'10.04.2025', lastLogin:'3 gün önce', messages:1820,  automations:8,  ig:540,  wa:1100, ip:'176.42.8.55',  device:'Masaüstü', browser:'Edge 123'   },
+        { id:5, name:'Test Kullanıcısı',email:'test@hizbot.com',      role:'user',  plan:'Ücretsiz',    status:'pasif', regDate:'20.04.2025', lastLogin:'1 hafta önce',messages:90,   automations:1,  ig:20,   wa:50,   ip:'193.0.0.1',   device:'Masaüstü', browser:'Chrome 124' },
+        { id:6, name:'Mehmet Öztürk',  email:'mehmet@isletme.net',    role:'user',  plan:'İş',          status:'pasif', regDate:'28.04.2025', lastLogin:'5 gün önce', messages:2100,  automations:15, ig:430,  wa:1500, ip:'88.246.1.99',  device:'Mobil',    browser:'Chrome 124' },
+      ];
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem('hizbot_users', JSON.stringify(users));
+    }
+
+    let USERS = getUsers();
+    let activeFilter = 'all';
+    let activeUserId = null;
+
+    const AVATAR_COLORS = [
+      'from-violet-500 to-purple-700',
+      'from-green-500 to-emerald-600',
+      'from-blue-400 to-cyan-600',
+      'from-pink-400 to-rose-600',
+      'from-orange-400 to-amber-500',
+      'from-teal-400 to-emerald-500',
+    ];
+
+    function renderUsers() {
+      const search = (document.getElementById('user-search')?.value || '').toLowerCase();
+      const tbody  = document.getElementById('users-tbody');
+      const noMsg  = document.getElementById('no-users');
+
+      let filtered = USERS.filter(u => {
+        const matchSearch = !search || u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search);
+        const matchFilter =
+          activeFilter === 'all'   ? true :
+          activeFilter === 'admin' ? u.role === 'admin' :
+          activeFilter === 'user'  ? u.role === 'user'  :
+          activeFilter === 'pasif' ? u.status === 'pasif' : true;
+        return matchSearch && matchFilter;
+      });
+
+      if (!filtered.length) {
+        tbody.innerHTML = '';
+        noMsg.classList.remove('hidden');
+        return;
+      }
+      noMsg.classList.add('hidden');
+
+      tbody.innerHTML = filtered.map((u, i) => {
+        const color    = AVATAR_COLORS[u.id % AVATAR_COLORS.length];
+        const roleBadge = u.role === 'admin'
+          ? `<span class="badge-admin text-xs px-2 py-0.5 rounded-full font-medium">Admin</span>`
+          : `<span class="badge-user-role text-xs px-2 py-0.5 rounded-full font-medium">Kullanıcı</span>`;
+        const planColor = u.plan === 'İş' ? 'text-violet-400' : u.plan === 'Profesyonel' ? 'text-blue-400' : 'text-white/40';
+        const statusBadge = u.status === 'aktif'
+          ? `<span class="badge-green text-xs px-2 py-0.5 rounded-full font-medium">Aktif</span>`
+          : `<span class="badge-orange text-xs px-2 py-0.5 rounded-full font-medium">Pasif</span>`;
+        return `
+          <tr class="table-row cursor-pointer" onclick="openModal(${u.id})">
+            <td class="px-5 py-3.5">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br ${color} flex items-center justify-center text-xs font-bold flex-shrink-0">${esc(u.name[0].toUpperCase())}</div>
+                <div>
+                  <p class="font-semibold text-sm leading-tight">${esc(u.name)}</p>
+                  <p class="text-white/30 text-xs">#${esc(u.id)}</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-5 py-3.5">
+              <p class="text-white/70 text-xs font-mono">${esc(u.email)}</p>
+            </td>
+            <td class="px-5 py-3.5">
+              <div class="flex flex-col gap-1">
+                ${roleBadge}
+                <span class="${planColor} text-xs">${u.plan}</span>
+              </div>
+            </td>
+            <td class="px-5 py-3.5">${statusBadge}</td>
+            <td class="px-5 py-3.5 text-white/40 text-xs">${u.lastLogin}</td>
+            <td class="px-5 py-3.5">
+              <div class="text-xs space-y-0.5">
+                <p class="text-white/60"><span class="text-white/30">Mesaj:</span> ${u.messages.toLocaleString('tr')}</p>
+                <p class="text-white/60"><span class="text-white/30">Oto:</span> ${u.automations}</p>
+              </div>
+            </td>
+            <td class="px-5 py-3.5 text-white/35 text-xs">${u.regDate}</td>
+            <td class="px-5 py-3.5">
+              <div class="flex gap-2" onclick="event.stopPropagation()">
+                <button onclick="openModal(${u.id})" class="text-xs text-violet-400 hover:text-violet-300 transition-colors">Detay</button>
+                <span class="text-white/15">|</span>
+                <button onclick="quickDelete(${u.id})" class="text-xs text-red-400/60 hover:text-red-400 transition-colors">Sil</button>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    function filterUsers() { renderUsers(); }
+
+    function setFilter(f, btn) {
+      activeFilter = f;
+      document.querySelectorAll('.filter-tab').forEach(el => el.classList.remove('active'));
+      btn.classList.add('active');
+      renderUsers();
+    }
+
+    function openModal(id) {
+      const u = USERS.find(x => x.id === id);
+      if (!u) return;
+      activeUserId = id;
+
+      const color = AVATAR_COLORS[u.id % AVATAR_COLORS.length];
+      const avatarEl = document.getElementById('modal-avatar');
+      avatarEl.className = `w-14 h-14 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center text-xl font-black flex-shrink-0`;
+      avatarEl.textContent = u.name[0].toUpperCase();
+
+      document.getElementById('modal-name').textContent = u.name;
+      document.getElementById('modal-email').textContent = u.email;
+      document.getElementById('modal-reg-email').textContent = u.email;
+      document.getElementById('modal-reg-date').textContent = u.regDate;
+      document.getElementById('modal-last-login').textContent = u.lastLogin;
+      document.getElementById('modal-plan').textContent = u.plan;
+      document.getElementById('modal-messages').textContent = u.messages.toLocaleString('tr') + ' mesaj';
+      document.getElementById('modal-automations').textContent = u.automations + ' otomasyon';
+      document.getElementById('modal-ig').textContent = u.ig.toLocaleString('tr') + ' DM';
+      document.getElementById('modal-wa').textContent = u.wa.toLocaleString('tr') + ' mesaj';
+      document.getElementById('modal-ip').textContent = u.ip;
+      document.getElementById('modal-device').textContent = u.device;
+      document.getElementById('modal-browser').textContent = u.browser;
+
+      // Şifre — gizli başla
+      document.getElementById('modal-pass').textContent = '••••••••';
+      document.getElementById('modal-pass').dataset.real = u.pass || '—';
+      document.getElementById('modal-pass').dataset.visible = 'false';
+      document.getElementById('modal-pass-eye').innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+
+      const roleBadge = document.getElementById('modal-role-badge');
+      roleBadge.textContent = u.role === 'admin' ? 'Admin' : 'Kullanıcı';
+      roleBadge.className = u.role === 'admin'
+        ? 'badge-admin text-xs px-2 py-0.5 rounded-full font-semibold'
+        : 'badge-user-role text-xs px-2 py-0.5 rounded-full font-semibold';
+
+      const statusBadge = document.getElementById('modal-status-badge');
+      statusBadge.textContent = u.status === 'aktif' ? 'Aktif' : 'Pasif';
+      statusBadge.className = u.status === 'aktif'
+        ? 'badge-green text-xs px-2 py-0.5 rounded-full font-semibold'
+        : 'badge-orange text-xs px-2 py-0.5 rounded-full font-semibold';
+
+      document.getElementById('modal-toggle-status').textContent =
+        u.status === 'aktif' ? 'Pasif Yap' : 'Aktif Yap';
+
+      document.getElementById('user-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('user-modal').classList.add('hidden');
+      activeUserId = null;
+    }
+
+    function toggleModalPass() {
+      const el = document.getElementById('modal-pass');
+      const eye = document.getElementById('modal-pass-eye');
+      const isVisible = el.dataset.visible === 'true';
+      if (isVisible) {
+        el.textContent = '••••••••';
+        el.dataset.visible = 'false';
+        eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+      } else {
+        el.textContent = el.dataset.real;
+        el.dataset.visible = 'true';
+        eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+      }
+    }
+
+    function copyModalPass() {
+      const el = document.getElementById('modal-pass');
+      const pass = el.dataset.real;
+      if (!pass || pass === '—') return;
+      navigator.clipboard.writeText(pass).then(() => {
+        const btn = document.querySelector('button[onclick="copyModalPass()"]');
+        btn.style.color = '#4ade80';
+        setTimeout(() => btn.style.color = '', 1500);
+      });
+    }
+
+    function toggleUserStatus() {
+      const u = USERS.find(x => x.id === activeUserId);
+      if (!u) return;
+      u.status = u.status === 'aktif' ? 'pasif' : 'aktif';
+      saveUsers(USERS);
+      closeModal();
+      renderUsers();
+    }
+
+    function toggleUserRole() {
+      const u = USERS.find(x => x.id === activeUserId);
+      if (!u) return;
+      u.role = u.role === 'admin' ? 'user' : 'admin';
+      saveUsers(USERS);
+      closeModal();
+      renderUsers();
+    }
+
+    function deleteUser() {
+      if (!activeUserId) return;
+      if (!confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')) return;
+      USERS = USERS.filter(x => x.id !== activeUserId);
+      saveUsers(USERS);
+      closeModal();
+      renderUsers();
+    }
+
+    function quickDelete(id) {
+      if (!confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')) return;
+      USERS = USERS.filter(x => x.id !== id);
+      saveUsers(USERS);
+      renderUsers();
+    }
+
+    function openAddModal()  { document.getElementById('add-modal').classList.remove('hidden'); }
+    function closeAddModal() { document.getElementById('add-modal').classList.add('hidden'); }
+
+    function addUser() {
+      const name  = document.getElementById('add-name').value.trim();
+      const email = document.getElementById('add-email').value.trim();
+      const role  = document.getElementById('add-role').value;
+      const plan  = document.getElementById('add-plan').value;
+      if (!name || !email) { alert('Ad ve e-posta zorunludur.'); return; }
+
+      const today = new Date();
+      const dateStr = `${String(today.getDate()).padStart(2,'0')}.${String(today.getMonth()+1).padStart(2,'0')}.${today.getFullYear()}`;
+      const newId = Math.max(...USERS.map(u => u.id), 0) + 1;
+
+      USERS.push({
+        id: newId, name, email, role, plan,
+        status: 'aktif',
+        regDate: dateStr,
+        lastLogin: 'Hiç giriş yapmadı',
+        messages: 0, automations: 0, ig: 0, wa: 0,
+        ip: '-', device: '-', browser: '-'
+      });
+      saveUsers(USERS);
+      closeAddModal();
+      renderUsers();
+      document.getElementById('add-name').value  = '';
+      document.getElementById('add-email').value = '';
+    }
+
+    // Auto-render when users page shown
+    const _origShowPage = showPage;
+    // Patch showPage to trigger renderUsers on users tab
+    const origShowPage = showPage;
+    window._patchedShowPage = function(id) {
+      origShowPage(id);
+      if (id === 'users') renderUsers();
+      if (id === 'site-settings') initSEOCounters();
+      if (id === 'automations') renderAutomationCards();
+    };
+    // Replace nav onclick
+    document.querySelectorAll('.nav-item').forEach(el => {
+      const m = el.getAttribute('onclick')?.match(/showPage\('(\w+)'\)/);
+      if (m) el.setAttribute('onclick', `_patchedShowPage('${m[1]}')`);
+    });
+
+    // ══════════════════════════════════════════
+    //  SITE SETTINGS
+    // ══════════════════════════════════════════
+
+    function showToast(msg, type) {
+      const t = document.getElementById('settings-toast');
+      t.textContent = msg || 'Ayarlar kaydedildi';
+      t.style.background = type === 'error' ? 'rgba(239,68,68,0.9)' : 'rgba(124,58,237,0.9)';
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 2800);
+    }
+
+    function saveSiteSettings(section) {
+      // In a real app this would POST to backend; here we persist in localStorage
+      const data = JSON.parse(localStorage.getItem('hizbot_site_settings') || '{}');
+      if (section === 'general') {
+        data.siteName  = document.getElementById('ss-site-name').value;
+        data.slogan    = document.getElementById('ss-slogan').value;
+        data.url       = document.getElementById('ss-url').value;
+        data.lang      = document.getElementById('ss-lang').value;
+        data.siteDesc  = document.getElementById('ss-desc').value;
+      } else if (section === 'contact') {
+        data.whatsapp     = document.getElementById('ss-whatsapp').value;
+        data.email        = document.getElementById('ss-email').value;
+        data.supportEmail = document.getElementById('ss-support-email').value;
+        data.phone        = document.getElementById('ss-phone').value;
+        data.address      = document.getElementById('ss-address').value;
+      } else if (section === 'social') {
+        data.instagram = document.getElementById('ss-instagram').value;
+        data.facebook  = document.getElementById('ss-facebook').value;
+        data.tiktok    = document.getElementById('ss-tiktok').value;
+        data.linkedin  = document.getElementById('ss-linkedin').value;
+      } else if (section === 'pricing') {
+        data.priceFree    = document.getElementById('ss-price-free').value;
+        data.priceFreeOld = document.getElementById('ss-price-free-old').value;
+        data.pricePro     = document.getElementById('ss-price-pro').value;
+        data.priceProOld  = document.getElementById('ss-price-pro-old').value;
+        data.priceBiz     = document.getElementById('ss-price-biz').value;
+        data.priceBizOld  = document.getElementById('ss-price-biz-old').value;
+        data.limitFree   = document.getElementById('ss-limit-free').value;
+        data.limitPro    = document.getElementById('ss-limit-pro').value;
+        data.limitBiz    = document.getElementById('ss-limit-biz').value;
+        data.tasksFree   = document.getElementById('ss-tasks-free').value;
+        data.tasksPro    = document.getElementById('ss-tasks-pro').value;
+      } else if (section === 'seo') {
+        data.seoTitle = document.getElementById('ss-seo-title').value;
+        data.seoDesc  = document.getElementById('ss-seo-desc').value;
+        data.keywords = document.getElementById('ss-keywords').value;
+      }
+      localStorage.setItem('hizbot_site_settings', JSON.stringify(data));
+      showToast('✓ Ayarlar kaydedildi — Anasayfada güncel');
+    }
+
+    function loadSiteSettings() {
+      const data = JSON.parse(localStorage.getItem('hizbot_site_settings') || '{}');
+      if (data.siteName)    document.getElementById('ss-site-name').value = data.siteName;
+      if (data.slogan)      document.getElementById('ss-slogan').value    = data.slogan;
+      if (data.url)         document.getElementById('ss-url').value       = data.url;
+      if (data.lang)        document.getElementById('ss-lang').value      = data.lang;
+      if (data.siteDesc)    document.getElementById('ss-desc').value      = data.siteDesc;
+      if (data.whatsapp)    document.getElementById('ss-whatsapp').value  = data.whatsapp;
+      if (data.email)       document.getElementById('ss-email').value     = data.email;
+      if (data.supportEmail)document.getElementById('ss-support-email').value = data.supportEmail;
+      if (data.phone)       document.getElementById('ss-phone').value     = data.phone;
+      if (data.address)     document.getElementById('ss-address').value   = data.address;
+      if (data.instagram)   document.getElementById('ss-instagram').value = data.instagram;
+      if (data.facebook)    document.getElementById('ss-facebook').value  = data.facebook;
+      if (data.tiktok)      document.getElementById('ss-tiktok').value    = data.tiktok;
+      if (data.linkedin)    document.getElementById('ss-linkedin').value  = data.linkedin;
+      if (data.priceFree)    document.getElementById('ss-price-free').value    = data.priceFree;
+      if (data.priceFreeOld) document.getElementById('ss-price-free-old').value = data.priceFreeOld;
+      if (data.pricePro)     document.getElementById('ss-price-pro').value     = data.pricePro;
+      if (data.priceProOld)  document.getElementById('ss-price-pro-old').value  = data.priceProOld;
+      if (data.priceBiz)     document.getElementById('ss-price-biz').value     = data.priceBiz;
+      if (data.priceBizOld)  document.getElementById('ss-price-biz-old').value  = data.priceBizOld;
+      if (data.limitFree)   document.getElementById('ss-limit-free').value   = data.limitFree;
+      if (data.limitPro)    document.getElementById('ss-limit-pro').value    = data.limitPro;
+      if (data.limitBiz)    document.getElementById('ss-limit-biz').value    = data.limitBiz;
+      if (data.tasksFree)   document.getElementById('ss-tasks-free').value   = data.tasksFree;
+      if (data.tasksPro)    document.getElementById('ss-tasks-pro').value    = data.tasksPro;
+      if (data.seoTitle)    document.getElementById('ss-seo-title').value    = data.seoTitle;
+      if (data.seoDesc)     document.getElementById('ss-seo-desc').value     = data.seoDesc;
+      if (data.keywords)    document.getElementById('ss-keywords').value     = data.keywords;
+    }
+
+    function initSEOCounters() {
+      const titleEl = document.getElementById('ss-seo-title');
+      const descEl  = document.getElementById('ss-seo-desc');
+      const updateTitle = () => {
+        const n = titleEl.value.length;
+        const el = document.getElementById('ss-title-count');
+        el.textContent = `${n}/60 karakter`;
+        el.style.color = n > 60 ? '#f87171' : n > 50 ? '#fb923c' : 'rgba(255,255,255,0.25)';
+      };
+      const updateDesc = () => {
+        const n = descEl.value.length;
+        const el = document.getElementById('ss-desc-count');
+        el.textContent = `${n}/160 karakter`;
+        el.style.color = n > 160 ? '#f87171' : n > 140 ? '#fb923c' : 'rgba(255,255,255,0.25)';
+      };
+      titleEl.addEventListener('input', updateTitle);
+      descEl.addEventListener('input', updateDesc);
+      updateTitle(); updateDesc();
+      loadSiteSettings();
+    }
+
+    function changeAdminPassword() {
+      const cur  = document.getElementById('ss-cur-pass').value;
+      const nw   = document.getElementById('ss-new-pass').value;
+      const nw2  = document.getElementById('ss-new-pass2').value;
+      const errEl = document.getElementById('sec-error');
+      const okEl  = document.getElementById('sec-success');
+      errEl.classList.add('hidden');
+      okEl.classList.add('hidden');
+
+      const adminAcc = { pass: 'Hizbot@2025!' };
+      const storedPass = localStorage.getItem('hizbot_admin_pass') || adminAcc.pass;
+
+      if (cur !== storedPass) { errEl.textContent = 'Mevcut şifre yanlış.'; errEl.classList.remove('hidden'); return; }
+      if (nw.length < 6)     { errEl.textContent = 'Yeni şifre en az 6 karakter olmalıdır.'; errEl.classList.remove('hidden'); return; }
+      if (nw !== nw2)        { errEl.textContent = 'Yeni şifreler eşleşmiyor.'; errEl.classList.remove('hidden'); return; }
+
+      localStorage.setItem('hizbot_admin_pass', nw);
+      document.getElementById('ss-cur-pass').value = '';
+      document.getElementById('ss-new-pass').value = '';
+      document.getElementById('ss-new-pass2').value = '';
+      okEl.classList.remove('hidden');
+      showToast('Şifre güncellendi');
+    }
+
+    function logoutAll() {
+      if (!confirm('Tüm oturumları sonlandırmak istediğinize emin misiniz?')) return;
+      localStorage.removeItem('hizbot_session');
+      sessionStorage.removeItem('hizbot_session');
+      showToast('Oturumlar sonlandırıldı');
+      setTimeout(() => window.location.href = 'login.html', 1500);
+    }
+
+    function clearUserData() {
+      if (!confirm('Tüm kullanıcı verileri silinecek. Bu işlem geri alınamaz. Emin misiniz?')) return;
+      localStorage.removeItem('hizbot_users');
+      USERS = getUsers();
+      showToast('Kullanıcı verileri temizlendi');
+    }
+
+    function resetSiteSettings() {
+      if (!confirm('Tüm site ayarları sıfırlanacak. Emin misiniz?')) return;
+      localStorage.removeItem('hizbot_site_settings');
+      showToast('Ayarlar varsayılana döndürüldü');
+    }
+
+    // ── Şifre Sıfırlama ──
+    function generatePassword() {
+      const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#';
+      return Array.from({length: 10}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    }
+
+    function resetUserPassword(userId) {
+      const u = USERS.find(x => x.id === userId);
+      if (!u) return;
+
+      const newPass = generatePassword();
+      u.pass = newPass;
+      saveUsers(USERS);
+
+      const subject = encodeURIComponent('Hızbot — Yeni Şifreniz');
+      const body = encodeURIComponent(
+        'Merhaba ' + u.name + ',\n\n' +
+        'Hızbot hesabınız için şifreniz sıfırlanmıştır.\n\n' +
+        'E-posta   : ' + u.email + '\n' +
+        'Yeni Şifre: ' + newPass + '\n\n' +
+        'Güvenliğiniz için giriş yaptıktan sonra şifrenizi değiştirmenizi öneririz.\n\n' +
+        'Giriş adresi: ' + (window.location.origin + '/login.html') + '\n\n' +
+        'Hızbot Destek Ekibi'
+      );
+
+      window.open(
+        'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(u.email) +
+        '&su=' + subject + '&body=' + body,
+        '_blank'
+      );
+
+      // Modalda bilgi göster
+      const okEl = document.getElementById('pw-sent-ok');
+      if (okEl) {
+        document.getElementById('pw-sent-msg').textContent =
+          u.name + ' için şifre sıfırlandı. Gmail açıldı → ' + u.email;
+        okEl.classList.remove('hidden');
+        setTimeout(() => okEl.classList.add('hidden'), 5000);
+      }
+
+      closeModal();
+      showToast('Şifre sıfırlandı: ' + u.name);
+    }
+
+    function renderPWUserList() {
+      const container = document.getElementById('pw-user-list');
+      if (!container) return;
+      const users = getUsers().filter(u => u.role !== 'admin' || true);
+      if (!users.length) { container.innerHTML = '<p class="text-xs text-white/25">Henüz kayıtlı kullanıcı yok.</p>'; return; }
+
+      const COLORS = ['from-violet-500 to-purple-700','from-green-500 to-emerald-600','from-blue-400 to-cyan-600','from-pink-400 to-rose-600','from-orange-400 to-amber-500','from-teal-400 to-emerald-500'];
+      container.innerHTML = users.map(u => `
+        <div class="rounded-xl overflow-hidden" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);">
+          <div class="flex items-center gap-3 px-3 py-2.5">
+            <div class="w-7 h-7 rounded-full bg-gradient-to-br ${COLORS[u.id % COLORS.length]} flex items-center justify-center text-xs font-bold flex-shrink-0">${esc(u.name[0].toUpperCase())}</div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold truncate">${esc(u.name)}</p>
+              <p class="text-xs text-white/35 truncate">${esc(u.email)}</p>
+            </div>
+            <button onclick="resetUserPassword(${u.id})" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors" style="background:rgba(251,146,60,0.15);border:1px solid rgba(251,146,60,0.3);color:#fb923c;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Sıfırla &amp; Gönder
+            </button>
+          </div>
+          <div class="px-3 pb-2.5 flex items-center gap-2" style="border-top:1px solid rgba(255,255,255,0.04);">
+            <span class="text-white/25 text-xs">Şifre:</span>
+            <span id="pw-val-${u.id}" class="font-mono text-xs font-bold text-white/70 tracking-wider">••••••••</span>
+            <button onclick="togglePWVis(${u.id})" data-pw="${esc(u.pass||'')}" class="text-white/25 hover:text-white/60 transition-colors ml-1" title="Göster/Gizle">
+              <svg id="pw-eye-${u.id}" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+            <button onclick="copyPW(${u.id})" data-pw="${esc(u.pass||'')}" class="text-white/25 hover:text-violet-400 transition-colors" title="Kopyala">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+        </div>`).join('');
+    }
+
+    function togglePWVis(userId) {
+      const el  = document.getElementById('pw-val-' + userId);
+      const eye = document.getElementById('pw-eye-' + userId);
+      const btn = eye.closest('button');
+      const pass = btn ? btn.dataset.pw : '';
+      if (el.textContent === '••••••••') {
+        el.textContent = pass || '—';
+        eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+      } else {
+        el.textContent = '••••••••';
+        eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+      }
+    }
+
+    function copyPW(userId) {
+      const btn = document.querySelector(`button[onclick="copyPW(${userId})"]`);
+      const pass = btn ? btn.dataset.pw : '';
+      navigator.clipboard.writeText(pass).then(() => {
+        if (btn) { btn.style.color = '#4ade80'; setTimeout(() => btn.style.color = '', 1200); }
+      });
+    }
+
+    // site-settings sayfası açıldığında kullanıcı listesini yükle
+    const _origInitSEO = initSEOCounters;
+    function initSEOCounters() {
+      _origInitSEO();
+      renderPWUserList();
+      renderAutoList();
+      loadPermissions();
+    }
+
+    // ══════════════════════════════════════════
+    //  OTOMASYON YÖNETİMİ
+    // ══════════════════════════════════════════
+
+    const PLATFORM_COLORS = {
+      whatsapp:  { bg: 'rgba(34,197,94,0.15)',  border: 'rgba(34,197,94,0.3)',   text: '#22c55e'  },
+      instagram: { bg: 'rgba(236,72,153,0.15)', border: 'rgba(236,72,153,0.3)',  text: '#ec4899'  },
+      email:     { bg: 'rgba(249,115,22,0.15)', border: 'rgba(249,115,22,0.3)',  text: '#f97316'  },
+      custom:    { bg: 'rgba(124,58,237,0.15)', border: 'rgba(124,58,237,0.3)',  text: '#a78bfa'  },
+    };
+
+    const PLATFORM_LABELS = { whatsapp: 'WhatsApp', instagram: 'Instagram', email: 'E-posta', custom: 'Özel' };
+
+    function getAutomations() {
+      const stored = localStorage.getItem('hizbot_automations');
+      if (stored) return JSON.parse(stored);
+      return [
+        { id:1, name:'Instagram DM Karşılama', platform:'instagram', desc:'Yeni takipçiye otomatik mesaj', active:true },
+        { id:2, name:'WhatsApp Chatbot',        platform:'whatsapp',  desc:'7/24 müşteri desteği',          active:true },
+        { id:3, name:'Kampanya Mesajları',       platform:'whatsapp',  desc:'Toplu mesaj gönderimi',         active:false },
+        { id:4, name:'E-posta Dizisi',           platform:'email',     desc:'Otomatik e-posta akışı',        active:true },
+      ];
+    }
+
+    function saveAutomations(list) {
+      localStorage.setItem('hizbot_automations', JSON.stringify(list));
+    }
+
+    function renderAutoList() {
+      const container = document.getElementById('auto-list');
+      if (!container) return;
+      const list = getAutomations();
+      if (!list.length) {
+        container.innerHTML = '<p class="text-xs text-white/30 text-center py-4">Henüz otomasyon yok. "Yeni Ekle" ile başlayın.</p>';
+        return;
+      }
+      container.innerHTML = list.map(a => {
+        const c = PLATFORM_COLORS[a.platform] || PLATFORM_COLORS.custom;
+        const label = PLATFORM_LABELS[a.platform] || a.platform;
+        return `<div class="flex items-center gap-3 px-4 py-3 rounded-xl" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:${c.bg};border:1px solid ${c.border};">
+            <span style="font-size:10px;font-weight:700;color:${c.text};">${label[0]}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold truncate">${a.name}</p>
+            <p class="text-xs text-white/35 truncate">${a.desc}</p>
+          </div>
+          <span class="text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0" style="background:${c.bg};color:${c.text};border:1px solid ${c.border};">${label}</span>
+          <input type="checkbox" class="toggle flex-shrink-0" ${a.active ? 'checked' : ''} onchange="toggleAutoActive(${a.id},this.checked)" />
+          <button onclick="deleteAutomation(${a.id})" class="flex-shrink-0 text-red-400/50 hover:text-red-400 transition-colors">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          </button>
+        </div>`;
+      }).join('');
+    }
+
+    function openAddAutomation() {
+      document.getElementById('auto-add-form').classList.remove('hidden');
+      document.getElementById('auto-new-name').focus();
+    }
+
+    function saveNewAutomation() {
+      const name     = document.getElementById('auto-new-name').value.trim();
+      const platform = document.getElementById('auto-new-platform').value;
+      const desc     = document.getElementById('auto-new-desc').value.trim();
+      if (!name) { showToast('Otomasyon ismi zorunludur', 'error'); return; }
+      const list = getAutomations();
+      const newId = Math.max(...list.map(a => a.id), 0) + 1;
+      list.push({ id: newId, name, platform, desc: desc || '-', active: true });
+      saveAutomations(list);
+      renderAutoList();
+      document.getElementById('auto-add-form').classList.add('hidden');
+      document.getElementById('auto-new-name').value = '';
+      document.getElementById('auto-new-desc').value = '';
+      showToast('Otomasyon eklendi');
+    }
+
+    function renderAutomationCards() {
+      const container = document.getElementById('auto-cards');
+      if (!container) return;
+      const list = getAutomations();
+      if (!list.length) {
+        container.innerHTML = '<div class="md:col-span-2 text-center py-12 text-white/30 text-sm">Henüz otomasyon yok.<br>Site Ayarları → Otomasyon Yönetimi\'nden ekleyin.</div>';
+        return;
+      }
+      const ICONS = {
+        whatsapp:  '<svg width="17" height="17" viewBox="0 0 24 24" fill="#22c55e"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>',
+        instagram: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#ec4899" stroke="none"/></svg>',
+        email:     '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+        custom:    '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>',
+      };
+      const BG = { whatsapp:'bg-green-500/15 border-green-500/25', instagram:'bg-pink-500/15 border-pink-500/25', email:'bg-orange-500/15 border-orange-500/25', custom:'bg-violet-500/15 border-violet-500/20' };
+      container.innerHTML = list.map(a => {
+        const ic   = ICONS[a.platform] || ICONS.custom;
+        const bg   = BG[a.platform] || BG.custom;
+        return `<div class="glass-card rounded-2xl p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl ${bg} border flex items-center justify-center">${ic}</div>
+              <div>
+                <p class="font-semibold text-sm">${a.name}</p>
+                <p class="text-white/35 text-xs">${a.desc}</p>
+              </div>
+            </div>
+            <input type="checkbox" class="toggle" ${a.active ? 'checked' : ''} onchange="toggleAutoActive(${a.id},this.checked)" />
+          </div>
+          <div class="flex gap-4 text-xs text-white/40">
+            <span>${PLATFORM_LABELS[a.platform] || a.platform}</span>
+            <span>•</span>
+            <span>${a.active ? 'Aktif' : 'Pasif'}</span>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function toggleAutoActive(id, val) {
+      const list = getAutomations();
+      const a = list.find(x => x.id === id);
+      if (a) { a.active = val; saveAutomations(list); }
+    }
+
+    function deleteAutomation(id) {
+      if (!confirm('Bu otomasyonu silmek istediğinize emin misiniz?')) return;
+      const list = getAutomations().filter(a => a.id !== id);
+      saveAutomations(list);
+      renderAutoList();
+      showToast('Otomasyon silindi');
+    }
+
+    // ══════════════════════════════════════════
+    //  KULLANICI İZİNLERİ
+    // ══════════════════════════════════════════
+
+    function loadPermissions() {
+      const p = JSON.parse(localStorage.getItem('hizbot_permissions') || '{}');
+      ['whatsapp','instagram','campaign','analytics','api','upgrade'].forEach(key => {
+        const el = document.getElementById('perm-' + key);
+        if (!el) return;
+        if (key in p) el.checked = p[key];
+      });
+    }
+
+    function savePermissions() {
+      const p = {};
+      ['whatsapp','instagram','campaign','analytics','api','upgrade'].forEach(key => {
+        const el = document.getElementById('perm-' + key);
+        if (el) p[key] = el.checked;
+      });
+      localStorage.setItem('hizbot_permissions', JSON.stringify(p));
+      showToast('İzinler kaydedildi');
+    }
+  </script>
+</body>
+</html>
