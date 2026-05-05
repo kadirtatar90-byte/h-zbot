@@ -1079,5 +1079,394 @@
     } catch(e) {}
   })();
 </script>
+
+<!-- ═══════════════════════════════════════════
+     CHATBOT WIDGET
+═══════════════════════════════════════════ -->
+<style>
+  /* Chat widget */
+  #chat-widget { position: fixed; bottom: 28px; right: 28px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+
+  #chat-toggle {
+    width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    box-shadow: 0 0 0 0 rgba(124,58,237,0.5), 0 8px 32px rgba(124,58,237,0.45);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s ease;
+    position: relative;
+  }
+  #chat-toggle:hover { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(124,58,237,0.15), 0 12px 40px rgba(124,58,237,0.55); }
+  #chat-toggle:active { transform: scale(0.95); }
+
+  #chat-pulse {
+    position: absolute; top: 0; right: 0; width: 14px; height: 14px;
+    background: #4ade80; border-radius: 50%; border: 2px solid #060608;
+  }
+  #chat-pulse::before {
+    content: ''; position: absolute; inset: -3px; border-radius: 50%;
+    background: rgba(74,222,128,0.4); animation: pulse-ring 1.8s ease-out infinite;
+  }
+  @keyframes pulse-ring { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(2); opacity: 0; } }
+
+  #chat-window {
+    width: 360px; height: 520px;
+    background: #0d0b14;
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: 20px;
+    display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 32px 80px rgba(0,0,0,0.7), 0 0 60px rgba(124,58,237,0.15);
+    transform-origin: bottom right;
+    transition: transform 0.3s cubic-bezier(.34,1.3,.64,1), opacity 0.25s ease;
+  }
+  #chat-window.chat-hidden { transform: scale(0.85) translateY(16px); opacity: 0; pointer-events: none; }
+
+  #chat-header {
+    padding: 16px 18px;
+    background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(79,70,229,0.12));
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+  }
+  #chat-avatar {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 900; color: #fff;
+    box-shadow: 0 4px 16px rgba(124,58,237,0.5);
+  }
+  #chat-status { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; flex-shrink: 0; box-shadow: 0 0 6px #4ade80; }
+
+  #chat-messages {
+    flex: 1; overflow-y: auto; padding: 16px;
+    display: flex; flex-direction: column; gap: 10px;
+    scrollbar-width: thin; scrollbar-color: rgba(124,58,237,0.4) transparent;
+  }
+  #chat-messages::-webkit-scrollbar { width: 4px; }
+  #chat-messages::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.4); border-radius: 2px; }
+
+  .chat-msg { display: flex; gap: 8px; animation: msg-in 0.25s cubic-bezier(.34,1.4,.64,1); max-width: 100%; }
+  @keyframes msg-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .chat-msg.bot { align-items: flex-end; }
+  .chat-msg.user { flex-direction: row-reverse; align-items: flex-end; }
+
+  .chat-bubble {
+    padding: 10px 14px; border-radius: 16px; font-size: 13.5px; line-height: 1.55;
+    max-width: 82%; word-break: break-word;
+  }
+  .bot .chat-bubble {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.85);
+    border-bottom-left-radius: 4px;
+  }
+  .user .chat-bubble {
+    background: linear-gradient(135deg, #7c3aed, #5b21b6); color: #fff;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 16px rgba(124,58,237,0.35);
+  }
+
+  .bot-mini-avatar {
+    width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 900; color: #fff;
+  }
+
+  .chat-time { font-size: 10px; color: rgba(255,255,255,0.2); margin-top: 3px; text-align: right; }
+
+  .chat-typing { display: flex; gap: 4px; align-items: center; padding: 10px 14px; }
+  .chat-typing span {
+    width: 7px; height: 7px; border-radius: 50%; background: rgba(124,58,237,0.7);
+    animation: typing-dot 1.2s ease-in-out infinite;
+  }
+  .chat-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .chat-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typing-dot { 0%,60%,100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-5px); opacity: 1; } }
+
+  .chat-quick-btns { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 4px 4px; }
+  .chat-quick-btn {
+    padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: none;
+    background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.3); color: rgba(255,255,255,0.7);
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+  }
+  .chat-quick-btn:hover { background: rgba(124,58,237,0.28); color: #fff; transform: translateY(-1px); }
+  .chat-quick-btn:active { transform: translateY(0); }
+
+  #chat-input-area {
+    padding: 12px 14px; border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0;
+    background: rgba(255,255,255,0.02);
+  }
+  #chat-input {
+    flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 10px 14px; color: #fff; font-size: 13.5px;
+    outline: none; resize: none; min-height: 42px; max-height: 100px; line-height: 1.4;
+    font-family: 'Inter', sans-serif; transition: border-color 0.2s;
+  }
+  #chat-input::placeholder { color: rgba(255,255,255,0.2); }
+  #chat-input:focus { border-color: rgba(124,58,237,0.5); }
+
+  #chat-send {
+    width: 42px; height: 42px; border-radius: 10px; border: none; cursor: pointer; flex-shrink: 0;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), opacity 0.2s;
+    box-shadow: 0 4px 16px rgba(124,58,237,0.4);
+  }
+  #chat-send:hover { transform: scale(1.08); }
+  #chat-send:active { transform: scale(0.93); }
+  #chat-send:disabled { opacity: 0.35; cursor: default; transform: none; }
+
+  @media (max-width: 400px) {
+    #chat-window { width: calc(100vw - 32px); }
+    #chat-widget { right: 16px; bottom: 16px; }
+  }
+</style>
+
+<div id="chat-widget">
+  <!-- Chat Window -->
+  <div id="chat-window" class="chat-hidden">
+    <!-- Header -->
+    <div id="chat-header">
+      <div id="chat-avatar">H</div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-bold text-white leading-tight">Hızbot Asistan</p>
+        <div class="flex items-center gap-1.5 mt-0.5">
+          <div id="chat-status"></div>
+          <span class="text-xs text-white/40">Çevrimiçi — genellikle hemen yanıt verir</span>
+        </div>
+      </div>
+      <button onclick="toggleChat()" class="text-white/30 hover:text-white/70 transition-colors p-1">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Messages -->
+    <div id="chat-messages"></div>
+
+    <!-- Input -->
+    <div id="chat-input-area">
+      <textarea id="chat-input" placeholder="Mesajınızı yazın…" rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMessage();}"
+        oninput="this.style.height='42px';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
+      <button id="chat-send" onclick="sendChatMessage()" title="Gönder">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toggle Button -->
+  <button id="chat-toggle" onclick="toggleChat()" aria-label="Sohbeti aç">
+    <div id="chat-pulse"></div>
+    <svg id="chat-icon-open" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+    <svg id="chat-icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" class="hidden">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+(function() {
+  const BOT_NAME  = 'Hızbot';
+  const WA_LINK   = 'https://wa.me/905443873239';
+  let chatOpen    = false;
+  let botTyping   = false;
+  let greeted     = false;
+  let msgCount    = 0;
+
+  const RESPONSES = [
+    {
+      keys: ['merhaba','selam','hello','hi','hey','iyi günler','iyi akşamlar'],
+      reply: 'Merhaba! 👋 Ben Hızbot Asistan. WhatsApp & Instagram otomasyonu, fiyatlar veya nasıl başlayacağın hakkında sana yardımcı olabilirim. Ne öğrenmek istersin?',
+      quick: ['💰 Fiyatlar', '⚡ Özellikler', '🚀 Nasıl Başlarım?', '📞 İletişim']
+    },
+    {
+      keys: ['fiyat','ücret','plan','paket','kaç','ücretsiz','free','pro','biz'],
+      reply: '💰 **Planlarımız:**\n\n🆓 **Ücretsiz** — ₺0/ay\n5 AI iş akışı, 1.000 görev/ay\n\n⭐ **Profesyonel** — ₺499/ay\n50 AI iş akışı, 25.000 görev/ay\n\n🏢 **İş** — ₺999/ay\nSınırsız iş akışı & öncelikli destek\n\nDetaylı bilgi için WhatsApp\'tan ulaşabilirsin!',
+      quick: ['🚀 Hemen Başla', '📞 WhatsApp\'tan Sor', '⚡ Özellikler']
+    },
+    {
+      keys: ['özellik','ne yapar','nasıl','neler','çalış','otomasyon','yapay zeka','ai','bot'],
+      reply: '⚡ **Hızbot ile neler yapabilirsin?**\n\n• WhatsApp & Instagram otomasyonu\n• 7/24 AI müşteri desteği\n• Akıllı mesaj yanıtlama\n• Sipariş & randevu takibi\n• Çoklu entegrasyon desteği\n• Gerçek zamanlı analitik\n\nKurulum sadece birkaç dakika sürer! 🎯',
+      quick: ['💰 Fiyatlar', '🚀 Nasıl Başlarım?', '📞 Demo İste']
+    },
+    {
+      keys: ['başla','kayıt','deneme','start','kurulum','nasıl başla'],
+      reply: '🚀 **Başlamak çok kolay!**\n\n1️⃣ Ücretsiz planı seç\n2️⃣ WhatsApp numaranı bağla\n3️⃣ AI iş akışlarını oluştur\n4️⃣ Otomatik yanıtlamayı aktifleştir\n\nHemen başlamak için WhatsApp\'tan yaz veya sayfanın alt kısmındaki formu doldur!',
+      quick: ['📞 WhatsApp\'tan Başla', '💰 Planları Gör']
+    },
+    {
+      keys: ['whatsapp','instagram','sosyal medya','kanal','entegrasyon'],
+      reply: '📱 **Desteklenen Platformlar:**\n\n✅ WhatsApp Business API\n✅ Instagram Direct Messages\n✅ Yakında: Telegram, Facebook Messenger\n\nTüm mesajlarını tek panelden yönet, AI otomatik yanıtlar versin!',
+      quick: ['💰 Fiyatlar', '🚀 Hemen Başla', '📞 Daha Fazla Bilgi']
+    },
+    {
+      keys: ['destek','yardım','sorun','hata','problem','iletişim','ulaş'],
+      reply: '📞 **Bizimle İletişime Geç:**\n\n💬 WhatsApp: +90 544 387 3239\n📧 E-posta: destek@turanai.com.tr\n\nÇalışma saatleri: Haftaiçi 09:00–18:00\nAcil destek: 7/24 WhatsApp',
+      quick: ['💬 WhatsApp\'a Yaz', '🚀 Hemen Başla']
+    },
+    {
+      keys: ['güvenli','güvenlik','gizlilik','veri','gdpr','kvkk'],
+      reply: '🔒 **Güvenlik & Gizlilik:**\n\nVerileriniz Türkiye\'deki sunucularda saklanır. KVKK uyumlu altyapı kullanıyoruz. Tüm iletişim SSL/TLS ile şifrelenir. Gizlilik politikamızı siteden okuyabilirsin.',
+      quick: ['💰 Fiyatlar', '📞 İletişim']
+    }
+  ];
+
+  const DEFAULT_REPLY = {
+    reply: 'Anladım! Bu konuda daha detaylı yardım için WhatsApp destek hattımıza yazabilirsin. Sana en kısa sürede dönelim. 😊',
+    quick: ['💬 WhatsApp\'a Yaz', '💰 Fiyatlar', '⚡ Özellikler', '📞 İletişim']
+  };
+
+  function now() {
+    return new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function addMessage(text, type) {
+    const container = document.getElementById('chat-messages');
+    const wrap = document.createElement('div');
+    wrap.className = 'chat-msg ' + type;
+
+    const formatted = text
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+
+    if (type === 'bot') {
+      wrap.innerHTML = `
+        <div class="bot-mini-avatar">H</div>
+        <div>
+          <div class="chat-bubble">${formatted}</div>
+          <div class="chat-time">${now()}</div>
+        </div>`;
+    } else {
+      wrap.innerHTML = `
+        <div>
+          <div class="chat-bubble">${formatted}</div>
+          <div class="chat-time">${now()}</div>
+        </div>`;
+    }
+    container.appendChild(wrap);
+    container.scrollTop = container.scrollHeight;
+    msgCount++;
+  }
+
+  function addQuickButtons(buttons) {
+    const container = document.getElementById('chat-messages');
+    const wrap = document.createElement('div');
+    wrap.className = 'chat-quick-btns';
+    buttons.forEach(label => {
+      const btn = document.createElement('button');
+      btn.className = 'chat-quick-btn';
+      btn.textContent = label;
+      btn.onclick = () => {
+        wrap.remove();
+        handleQuickBtn(label);
+      };
+      wrap.appendChild(btn);
+    });
+    container.appendChild(wrap);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function handleQuickBtn(label) {
+    const lower = label.toLowerCase();
+    if (lower.includes('whatsapp') || lower.includes('yaz')) {
+      addMessage(label, 'user');
+      setTimeout(() => {
+        showTyping(1000, () => {
+          addMessage('Seni WhatsApp\'a yönlendiriyorum! 🚀', 'bot');
+          setTimeout(() => window.open(WA_LINK, '_blank'), 600);
+        });
+      }, 200);
+    } else {
+      addMessage(label, 'user');
+      setTimeout(() => processInput(label), 200);
+    }
+  }
+
+  function showTyping(duration, cb) {
+    if (botTyping) return;
+    botTyping = true;
+    const container = document.getElementById('chat-messages');
+    const typing = document.createElement('div');
+    typing.className = 'chat-msg bot';
+    typing.id = 'chat-typing-indicator';
+    typing.innerHTML = `
+      <div class="bot-mini-avatar">H</div>
+      <div class="chat-bubble p-0">
+        <div class="chat-typing"><span></span><span></span><span></span></div>
+      </div>`;
+    container.appendChild(typing);
+    container.scrollTop = container.scrollHeight;
+    setTimeout(() => {
+      typing.remove();
+      botTyping = false;
+      cb();
+    }, duration);
+  }
+
+  function processInput(text) {
+    const lower = text.toLowerCase().trim();
+    if (!lower) return;
+
+    let found = null;
+    for (const r of RESPONSES) {
+      if (r.keys.some(k => lower.includes(k))) { found = r; break; }
+    }
+    const resp = found || DEFAULT_REPLY;
+    const delay = 600 + Math.min(text.length * 12, 800);
+
+    showTyping(delay, () => {
+      addMessage(resp.reply, 'bot');
+      if (resp.quick) addQuickButtons(resp.quick);
+    });
+  }
+
+  window.sendChatMessage = function() {
+    if (botTyping) return;
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    input.style.height = '42px';
+    // remove existing quick buttons
+    document.querySelectorAll('.chat-quick-btns').forEach(el => el.remove());
+    addMessage(text, 'user');
+    processInput(text);
+  };
+
+  window.toggleChat = function() {
+    chatOpen = !chatOpen;
+    const win  = document.getElementById('chat-window');
+    const open = document.getElementById('chat-icon-open');
+    const close = document.getElementById('chat-icon-close');
+    const pulse = document.getElementById('chat-pulse');
+
+    if (chatOpen) {
+      win.classList.remove('chat-hidden');
+      open.classList.add('hidden');
+      close.classList.remove('hidden');
+      pulse.style.display = 'none';
+      if (!greeted) {
+        greeted = true;
+        setTimeout(() => {
+          showTyping(900, () => {
+            addMessage('Merhaba! 👋 Ben Hızbot Asistan. Sana nasıl yardımcı olabilirim?', 'bot');
+            addQuickButtons(['💰 Fiyatlar', '⚡ Özellikler', '🚀 Nasıl Başlarım?', '📞 İletişim']);
+          });
+        }, 300);
+      }
+      setTimeout(() => {
+        const msgs = document.getElementById('chat-messages');
+        msgs.scrollTop = msgs.scrollHeight;
+        document.getElementById('chat-input').focus();
+      }, 350);
+    } else {
+      win.classList.add('chat-hidden');
+      open.classList.remove('hidden');
+      close.classList.add('hidden');
+    }
+  };
+})();
+</script>
 </body>
 </html>
