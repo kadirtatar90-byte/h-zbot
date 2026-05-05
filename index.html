@@ -1146,7 +1146,7 @@
   .chat-msg { display: flex; gap: 8px; animation: msg-in 0.25s cubic-bezier(.34,1.4,.64,1); max-width: 100%; }
   @keyframes msg-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-  .chat-msg.bot { align-items: flex-end; }
+  .chat-msg.bot { align-items: flex-end; flex-direction: row-reverse; }
   .chat-msg.user { flex-direction: row-reverse; align-items: flex-end; }
 
   .chat-bubble {
