@@ -177,13 +177,13 @@
 
       <!-- Role Tabs -->
       <div class="flex gap-2 p-1 rounded-xl mb-6" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06);">
-        <div class="role-tab active-admin" id="tab-admin" onclick="selectRole('admin')">
+        <div class="role-tab hidden" id="tab-admin" onclick="selectRole('admin')">
           <span class="flex items-center justify-center gap-1.5">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             Admin
           </span>
         </div>
-        <div class="role-tab" id="tab-user" onclick="selectRole('user')">
+        <div class="role-tab active-user w-full" id="tab-user" onclick="selectRole('user')">
           <span class="flex items-center justify-center gap-1.5">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             Kullanıcı
@@ -271,7 +271,7 @@
       user:  { email: 'kullanici@hizbot.com', pass: 'User@2025!',  name: 'Kullanıcı', role: 'user'  }
     };
 
-    let currentRole = 'admin';
+    let currentRole = 'user';
 
     function selectRole(role) {
       currentRole = role;
@@ -354,7 +354,7 @@
     }
 
     // Init placeholder
-    selectRole('admin');
+    selectRole('user');
 
     /* ── Şifremi Unuttum ── */
     function openForgot(e) {
