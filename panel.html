@@ -164,7 +164,7 @@
 
     <!-- Top bar -->
     <header class="h-16 flex items-center gap-4 px-6 border-b border-white/5 sticky top-0 z-30"
-            style="background:rgba(6,6,8,0.9); backdrop-filter:blur(20px);">
+            style="background:rgba(6,6,8,0.9); -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);">
       <button class="md:hidden text-white/50 hover:text-white transition-colors" onclick="openSidebar()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
@@ -1249,8 +1249,10 @@
 
     // Load users from localStorage (persist across sessions)
     function getUsers() {
-      const stored = localStorage.getItem('hizbot_users');
-      if (stored) return JSON.parse(stored);
+      try {
+        const stored = localStorage.getItem('hizbot_users');
+        if (stored) return JSON.parse(stored);
+      } catch(e) {}
       // Default seed data
       return [
         { id:1, name:'Admin',          email:'admin@hizbot.com',      role:'admin', plan:'İş',          status:'aktif', regDate:'01.01.2025', lastLogin:'Az önce',    messages:14200, automations:48, ig:3540, wa:8912, ip:'192.168.1.1',   device:'Masaüstü', browser:'Chrome 124' },
@@ -1263,7 +1265,7 @@
     }
 
     function saveUsers(users) {
-      localStorage.setItem('hizbot_users', JSON.stringify(users));
+      try { localStorage.setItem('hizbot_users', JSON.stringify(users)); } catch(e) {}
     }
 
     let USERS = getUsers();
@@ -1531,7 +1533,7 @@
 
     function saveSiteSettings(section) {
       // In a real app this would POST to backend; here we persist in localStorage
-      const data = JSON.parse(localStorage.getItem('hizbot_site_settings') || '{}');
+      let data = {}; try { data = JSON.parse(localStorage.getItem('hizbot_site_settings') || '{}'); } catch(e) {}
       if (section === 'general') {
         data.siteName  = document.getElementById('ss-site-name').value;
         data.slogan    = document.getElementById('ss-slogan').value;
@@ -1566,12 +1568,12 @@
         data.seoDesc  = document.getElementById('ss-seo-desc').value;
         data.keywords = document.getElementById('ss-keywords').value;
       }
-      localStorage.setItem('hizbot_site_settings', JSON.stringify(data));
+      try { localStorage.setItem('hizbot_site_settings', JSON.stringify(data)); } catch(e) {}
       showToast('✓ Ayarlar kaydedildi — Anasayfada güncel');
     }
 
     function loadSiteSettings() {
-      const data = JSON.parse(localStorage.getItem('hizbot_site_settings') || '{}');
+      let data = {}; try { data = JSON.parse(localStorage.getItem('hizbot_site_settings') || '{}'); } catch(e) {}
       if (data.siteName)    document.getElementById('ss-site-name').value = data.siteName;
       if (data.slogan)      document.getElementById('ss-slogan').value    = data.slogan;
       if (data.url)         document.getElementById('ss-url').value       = data.url;
@@ -1633,13 +1635,13 @@
       okEl.classList.add('hidden');
 
       const adminAcc = { pass: 'Hizbot@2025!' };
-      const storedPass = localStorage.getItem('hizbot_admin_pass') || adminAcc.pass;
+      let storedPass = adminAcc.pass; try { storedPass = localStorage.getItem('hizbot_admin_pass') || adminAcc.pass; } catch(e) {}
 
       if (cur !== storedPass) { errEl.textContent = 'Mevcut şifre yanlış.'; errEl.classList.remove('hidden'); return; }
       if (nw.length < 6)     { errEl.textContent = 'Yeni şifre en az 6 karakter olmalıdır.'; errEl.classList.remove('hidden'); return; }
       if (nw !== nw2)        { errEl.textContent = 'Yeni şifreler eşleşmiyor.'; errEl.classList.remove('hidden'); return; }
 
-      localStorage.setItem('hizbot_admin_pass', nw);
+      try { localStorage.setItem('hizbot_admin_pass', nw); } catch(e) {}
       document.getElementById('ss-cur-pass').value = '';
       document.getElementById('ss-new-pass').value = '';
       document.getElementById('ss-new-pass2').value = '';
@@ -1790,8 +1792,7 @@
     const PLATFORM_LABELS = { whatsapp: 'WhatsApp', instagram: 'Instagram', email: 'E-posta', custom: 'Özel' };
 
     function getAutomations() {
-      const stored = localStorage.getItem('hizbot_automations');
-      if (stored) return JSON.parse(stored);
+      try { const stored = localStorage.getItem('hizbot_automations'); if (stored) return JSON.parse(stored); } catch(e) {}
       return [
         { id:1, name:'Instagram DM Karşılama', platform:'instagram', desc:'Yeni takipçiye otomatik mesaj', active:true },
         { id:2, name:'WhatsApp Chatbot',        platform:'whatsapp',  desc:'7/24 müşteri desteği',          active:true },
@@ -1801,7 +1802,7 @@
     }
 
     function saveAutomations(list) {
-      localStorage.setItem('hizbot_automations', JSON.stringify(list));
+      try { localStorage.setItem('hizbot_automations', JSON.stringify(list)); } catch(e) {}
     }
 
     function renderAutoList() {
@@ -1910,7 +1911,7 @@
     // ══════════════════════════════════════════
 
     function loadPermissions() {
-      const p = JSON.parse(localStorage.getItem('hizbot_permissions') || '{}');
+      let p = {}; try { p = JSON.parse(localStorage.getItem('hizbot_permissions') || '{}'); } catch(e) {}
       ['whatsapp','instagram','campaign','analytics','api','upgrade'].forEach(key => {
         const el = document.getElementById('perm-' + key);
         if (!el) return;
@@ -1924,7 +1925,7 @@
         const el = document.getElementById('perm-' + key);
         if (el) p[key] = el.checked;
       });
-      localStorage.setItem('hizbot_permissions', JSON.stringify(p));
+      try { localStorage.setItem('hizbot_permissions', JSON.stringify(p)); } catch(e) {}
       showToast('İzinler kaydedildi');
     }
   </script>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" style="height:-webkit-fill-available;">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -33,6 +33,7 @@
     .glass-card {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.08);
+      -webkit-backdrop-filter: blur(20px);
       backdrop-filter: blur(20px);
     }
     .input-field {
@@ -41,6 +42,8 @@
       color: #fff;
       transition: border-color 0.2s, box-shadow 0.2s;
       outline: none;
+      -webkit-appearance: none;
+      appearance: none;
     }
     .input-field:focus {
       border-color: rgba(124,58,237,0.6);
@@ -104,7 +107,7 @@
     /* Modals */
     .modal-overlay {
       position: fixed; inset: 0; z-index: 100;
-      background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.7); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
       display: flex; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none; transition: opacity 0.2s;
     }
@@ -152,7 +155,7 @@
     .terms-check { width:15px; height:15px; accent-color:#7c3aed; cursor:pointer; flex-shrink:0; margin-top:1px; }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center relative overflow-hidden">
+<body class="min-h-screen flex items-center justify-center relative overflow-x-hidden" style="min-height:100vh; min-height:-webkit-fill-available;">
 
   <div class="orb absolute w-[600px] h-[600px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
   <div class="absolute inset-0 pointer-events-none opacity-25"
