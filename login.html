@@ -334,9 +334,12 @@
         const account = Object.values(ACCOUNTS).find(a => a.email === email && a.pass === pass);
         if (account) {
           const session = { email: account.email, name: account.name, role: account.role };
-          if (remember) localStorage.setItem('hizbot_session', JSON.stringify(session));
-          else sessionStorage.setItem('hizbot_session', JSON.stringify(session));
-          window.location.href = 'panel.html';
+          const json = JSON.stringify(session);
+          // Write to both storages; try-catch handles iOS Private Browsing (localStorage throws)
+          try { if (remember) localStorage.setItem('hizbot_session', json);
+                else { localStorage.removeItem('hizbot_session'); } } catch(e) {}
+          try { sessionStorage.setItem('hizbot_session', json); } catch(e) {}
+          window.location.replace('panel.html');
         } else {
           setLoading(false);
           showError('E-posta veya şifre hatalı.');
@@ -346,7 +349,7 @@
 
     // Auto-redirect if already logged in
     const sess = localStorage.getItem('hizbot_session') || sessionStorage.getItem('hizbot_session');
-    if (sess) window.location.href = 'panel.html';
+    if (sess) { window.location.replace('panel.html'); throw 0; }
 
     // Show demo section only when ?dev=1 is in URL
     if (new URLSearchParams(window.location.search).get('dev') === '1') {

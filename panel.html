@@ -1103,9 +1103,11 @@
   <script>
     // ── Auth guard ──
     const raw = localStorage.getItem('hizbot_session') || sessionStorage.getItem('hizbot_session');
-    if (!raw) { window.location.href = 'login.html'; }
+    if (!raw) { window.location.replace('login.html'); throw 0; }
 
-    const session = JSON.parse(raw);
+    let session;
+    try { session = JSON.parse(raw); } catch(e) { window.location.replace('login.html'); throw 0; }
+    if (!session || !session.role) { window.location.replace('login.html'); throw 0; }
     const isAdmin = session.role === 'admin';
 
     // ── Nav definitions ──
@@ -1195,7 +1197,7 @@
     function logout() {
       localStorage.removeItem('hizbot_session');
       sessionStorage.removeItem('hizbot_session');
-      window.location.href = 'login.html';
+      window.location.replace('login.html');
     }
 
     // ── Init ──
@@ -1650,7 +1652,7 @@
       localStorage.removeItem('hizbot_session');
       sessionStorage.removeItem('hizbot_session');
       showToast('Oturumlar sonlandırıldı');
-      setTimeout(() => window.location.href = 'login.html', 1500);
+      setTimeout(() => window.location.replace('login.html'), 1500);
     }
 
     function clearUserData() {
