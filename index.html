@@ -235,14 +235,16 @@
     <a href="#pricing" class="nav-link text-sm py-2">Fiyatlar</a>
     <a href="#blog" class="nav-link text-sm py-2">Blog</a>
     <a href="#contact" class="nav-link text-sm py-2">İletişim</a>
-    <a href="login.html"
-       style="display:block; text-align:center; margin-top:6px; padding:10px 20px; border-radius:10px; font-size:14px; font-weight:600; color:rgba(255,255,255,0.85); border:1px solid rgba(167,139,250,0.35); background:rgba(124,58,237,0.1);">
+    <button type="button"
+       onclick="document.getElementById('mobile-menu').classList.remove('open'); window.location.href='login.html';"
+       style="display:block; width:100%; text-align:center; margin-top:6px; padding:10px 20px; border-radius:10px; font-size:14px; font-weight:600; color:rgba(255,255,255,0.85); border:1px solid rgba(167,139,250,0.35); background:rgba(124,58,237,0.1); cursor:pointer;">
       Giriş Yap
-    </a>
-    <a href="https://wa.me/905443873239"
-       style="display:block; text-align:center; margin-top:6px; padding:10px 20px; border-radius:10px; font-size:14px; font-weight:700; color:#fff; background:#7c3aed;">
+    </button>
+    <button type="button"
+       onclick="document.getElementById('mobile-menu').classList.remove('open'); window.location.href='https://wa.me/905443873239';"
+       style="display:block; width:100%; text-align:center; margin-top:6px; padding:10px 20px; border-radius:10px; font-size:14px; font-weight:700; color:#fff; background:#7c3aed; cursor:pointer; border:none;">
       Başla — WhatsApp
-    </a>
+    </button>
   </div>
 </nav>
 
