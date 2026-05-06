@@ -275,8 +275,8 @@
 
     function selectRole(role) {
       currentRole = role;
-      document.getElementById('tab-admin').className = 'role-tab' + (role === 'admin' ? ' active-admin' : '');
-      document.getElementById('tab-user').className  = 'role-tab' + (role === 'user'  ? ' active-user'  : '');
+      document.getElementById('tab-admin').className = 'role-tab hidden' + (role === 'admin' ? ' active-admin' : '');
+      document.getElementById('tab-user').className  = 'role-tab w-full' + (role === 'user'  ? ' active-user'  : '');
       document.getElementById('email').placeholder = ACCOUNTS[role].email;
       document.getElementById('error-msg').classList.add('hidden');
       document.getElementById('error-msg').classList.remove('flex');
