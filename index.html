@@ -53,12 +53,14 @@
     .glass-card {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.07);
+      -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
     }
 
     /* Nav blur */
     .nav-blur {
       background: rgba(6,6,8,0.85);
+      -webkit-backdrop-filter: blur(20px);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
@@ -234,12 +236,12 @@
     <a href="#blog" class="nav-link text-sm py-2">Blog</a>
     <a href="#contact" class="nav-link text-sm py-2">İletişim</a>
     <a href="login.html"
-       class="block text-center mt-1 px-5 py-2.5 rounded-lg text-sm font-semibold text-white/80 border border-white/10 hover:border-white/25 hover:text-white transition-colors">
+       style="display:block; text-align:center; margin-top:6px; padding:10px 20px; border-radius:10px; font-size:14px; font-weight:600; color:rgba(255,255,255,0.85); border:1px solid rgba(167,139,250,0.35); background:rgba(124,58,237,0.1);">
       Giriş Yap
     </a>
-    <a href="https://wa.me/905443873239" target="_blank"
-       class="btn-primary mt-1 px-5 py-2.5 rounded-lg text-sm font-semibold text-white text-center">
-      Başla
+    <a href="https://wa.me/905443873239"
+       style="display:block; text-align:center; margin-top:6px; padding:10px 20px; border-radius:10px; font-size:14px; font-weight:700; color:#fff; background:#7c3aed;">
+      Başla — WhatsApp
     </a>
   </div>
 </nav>
@@ -1365,14 +1367,19 @@
 
   function handleQuickBtn(label) {
     const lower = label.toLowerCase();
-    if (lower.includes('whatsapp') || lower.includes('yaz')) {
+    if (lower.includes('whatsapp') || lower.includes('yaz') || lower.includes('başla') || lower.includes('demo') || lower.includes('iletişim') || lower.includes('sor') || lower.includes('bilgi')) {
       addMessage(label, 'user');
-      setTimeout(() => {
-        showTyping(1000, () => {
-          addMessage('Seni WhatsApp\'a yönlendiriyorum! 🚀', 'bot');
-          setTimeout(() => window.open(WA_LINK, '_blank'), 600);
-        });
-      }, 200);
+      showTyping(800, () => {
+        addMessage('Seni WhatsApp\'a yönlendiriyorum! 🚀', 'bot');
+        // Popup blocker bypass: <a> tıklaması ile yönlendir
+        const a = document.createElement('a');
+        a.href = WA_LINK;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
     } else {
       addMessage(label, 'user');
       setTimeout(() => processInput(label), 200);
